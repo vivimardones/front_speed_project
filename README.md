@@ -1,73 +1,83 @@
-# React + TypeScript + Vite
+# Speed Project – Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este repositorio contiene el frontend del proyecto **Speed Project**, desarrollado como parte del Proyecto de Título de la carrera Analista Programador.
 
-Currently, two official plugins are available:
+La aplicación web permite la gestión y visualización de información relacionada con clubes deportivos, deportistas, campeonatos, entrenamientos, inscripciones, pagos y comunicaciones internas, consumiendo una API REST desarrollada en Node.js.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## Tecnologías utilizadas
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React
+- JavaScript
+- HTML5
+- CSS
+- Axios
+- Node.js (entorno de desarrollo)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Instalación del proyecto
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. Clonar el repositorio:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+git clone https://github.com/vivimardones/front_speed_project.git
+```
+2. Ingresar a la carpeta del proyecto:
+```bash
+cd front_speed_project
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+3. Instalar dependencias:
+```bash
+npm install
 ```
+
+## Ejecución del proyecto
+Para ejecutar la aplicación en entorno de desarrollo:
+```bash
+npm start
+```
+
+La aplicación se ejecutará por defecto en:
+http://localhost:3000
+---
+
+## Funcionamiento general
+
+El frontend se comunica con una API REST desarrollada en Node.js, la cual gestiona la lógica de negocio y el acceso a la base de datos Firebase Firestore.
+
+La aplicación permite:
+
+- Gestión de usuarios y perfiles (deportista, apoderado, administrador, entrenador)
+- Visualización y administración de clubes deportivos
+- Gestión de ramas deportivas, series y categorías
+- Inscripción de deportistas a campeonatos
+- Registro de entrenamientos y control de asistencia
+- Gestión de pagos y estados financieros
+- Publicación de noticias y comunicaciones internas
+- Comunicación con el Backend
+- La comunicación con el backend se realiza mediante peticiones HTTP utilizando Axios, intercambiando información en formato JSON.
+
+---
+
+## Repositorio del backend:
+
+https://github.com/vivimardones/api_speed-project
+---
+
+## Estructura del proyecto
+
+El proyecto se organiza en componentes y vistas, permitiendo separar la lógica de presentación de la lógica de consumo de datos desde la API.
+
+Se utilizan componentes reutilizables para formularios, listados y vistas principales del sistema.
+--- 
+## Estado del proyecto
+
+El proyecto se encuentra en desarrollo y corresponde a una implementación funcional para fines académicos, orientada a demostrar el uso de una arquitectura frontend-backend con base de datos NoSQL.
+---
+## Autora
+
+Proyecto desarrollado por Viviana Mardones
+Proyecto de Título – Analista Programador
