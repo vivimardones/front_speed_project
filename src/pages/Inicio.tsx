@@ -1,48 +1,78 @@
-import {
-  Box,
-  Typography,
-  Card,
-  CardActionArea,
-  CardContent,
-} from "@mui/material";
-import Grid from "@mui/material/Grid";
+import { Typography, Button, Container } from "@mui/material";
 import { Link } from "react-router-dom";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import "../styles/Inicio.css"; 
+
+import patin1 from "../images/patin_1.jpg";
+import patin2 from "../images/patin_2.jpg";
+import patin3 from "../images/patin_3.jpg";
+
+<Container maxWidth="sm">
+  
+</Container>
+const noticias = [
+  { titulo: "Campeonato Nacional", resumen: "Speed Project arrasa en la final.", imagen: patin1 },
+  { titulo: "Nueva indumentaria", resumen: "Presentamos el nuevo uniforme oficial.", imagen: patin2 },
+  { titulo: "Entrenamiento abierto", resumen: "Ven a conocer el club.", imagen: patin3 },
+];
 
 export default function Inicio() {
-  const secciones = [
-    { title: "Usuarios", path: "/usuarios" },
-    { title: "Vehículos", path: "/vehiculos" },
-    { title: "Pagos", path: "/pagos" },
-    { title: "Asistencia", path: "/asistencia" },
-    { title: "Inscripciones", path: "/inscripciones" },
-    { title: "Campeonatos", path: "/campeonatos" },
-    { title: "Noticias", path: "/noticias" },
-  ];
+  const sliderSettings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+  };
 
   return (
-    <Box sx={{ mt: 4 }}>
-      <Typography variant="h4" align="center" gutterBottom>
-        Bienvenida al Club Speed Project 🏎️
-      </Typography>
-      <Typography variant="subtitle1" align="center" gutterBottom>
-        Selecciona una sección para comenzar
-      </Typography>
+    <div>
+      {/* Banner principal */}
+      <div
+        className="banner"
+        style={{ backgroundImage: `url(${patin1})` }} // 👈 usa una imagen como fondo
+      >
+        <Typography variant="h4" align="center">
+          ONE TEAM, ONE DREAM 🏁
+        </Typography>
+      </div>
 
-      <Grid container spacing={3} justifyContent="center" sx={{ mt: 2 }}>
-        {secciones.map((item) => (
-          <Grid item xs={12} sm={6} md={4} key={item.title}>
-            <Card>
-              <CardActionArea component={Link} to={item.path}>
-                <CardContent>
-                  <Typography variant="h6" align="center">
-                    {item.title}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
+      {/* Encabezado */}
+      <Container className="encabezado">
+        <Typography variant="h3" gutterBottom>
+          Club Speed Project
+        </Typography>
+        <Typography variant="subtitle1" gutterBottom>
+          Una pasión, un equipo, un sueño
+        </Typography>
+
+        {/* Carrusel */}
+        <div className="carrusel">
+          <Slider {...sliderSettings}>
+            {noticias.map((n, i) => (
+              <div key={i}>
+                <img src={n.imagen} alt={n.titulo} />
+                <Typography variant="h6" align="center" sx={{ mt: 2 }}>
+                  {n.titulo}
+                </Typography>
+                <Typography variant="body2" align="center">
+                  {n.resumen}
+                </Typography>
+              </div>
+            ))}
+          </Slider>
+        </div>
+
+        {/* Botón de navegación */}
+        <div className="boton-noticias">
+          <Button variant="contained" color="primary" component={Link} to="/noticias">
+            Ver más noticias
+          </Button>
+        </div>
+      </Container>
+    </div>
   );
 }
