@@ -44,27 +44,63 @@ La aplicación se ejecutará por defecto en:
 http://localhost:3000
 ---
 
-## Funcionamiento general
+## Funcionamiento general de la aplicación
 
-El frontend se comunica con una API REST desarrollada en Node.js, la cual gestiona la lógica de negocio y el acceso a la base de datos Firebase Firestore.
+El frontend consume una API REST desarrollada en Node.js, la cual gestiona la lógica de negocio y el acceso a la base de datos Firebase Firestore.
 
-La aplicación permite:
+La aplicación está orientada a distintos perfiles de usuario, como:
+- Deportista
+- Apoderado
+- Administrador
+- Entrenador
+- Dirigente
 
-- Gestión de usuarios y perfiles (deportista, apoderado, administrador, entrenador)
-- Visualización y administración de clubes deportivos
-- Gestión de ramas deportivas, series y categorías
+Las vistas y funcionalidades disponibles dependen del perfil del usuario.
+
+--- 
+
+## Principales funcionalidades
+
+- Registro y visualización de usuarios
+- Gestión de clubes deportivos
+- Administración de ramas deportivas, series y categorías
 - Inscripción de deportistas a campeonatos
-- Registro de entrenamientos y control de asistencia
+- Visualización de campeonatos y fechas de competencia
+- Registro de entrenamientos
+- Control de asistencia a entrenamientos
 - Gestión de pagos y estados financieros
 - Publicación de noticias y comunicaciones internas
-- Comunicación con el Backend
-- La comunicación con el backend se realiza mediante peticiones HTTP utilizando Axios, intercambiando información en formato JSON.
+
+--- 
+
+## Ejemplos de consumo de la API
+
+La aplicación se comunica con el backend mediante peticiones HTTP utilizando Axios, intercambiando datos en formato JSON.
+Algunos ejemplos de operaciones realizadas desde el frontend:
+
+- Obtener listado de usuarios
+GET /usuarios
+
+- Obtener clubes registrados
+GET /clubes
+
+- Inscribir un deportista a un campeonato
+POST /inscripciones
+
+- Registrar asistencia a un entrenamiento
+POST /asistencias
+
+- Consultar pagos asociados a un deportista
+GET /pagos/:idDeportista
 
 ---
 
-## Repositorio del backend
+## Comunicación con el Backend
 
+Repositorio del backend:
 https://github.com/vivimardones/api_speed-project
+
+El backend expone los endpoints necesarios para la gestión de la información y utiliza Firebase Firestore como base de datos NoSQL.
 
 ---
 
