@@ -62,20 +62,23 @@ La aplicación permite:
 
 ---
 
-## Repositorio del backend:
+## Repositorio del backend
 
 https://github.com/vivimardones/api_speed-project
+
 ---
 
 ## Estructura del proyecto
 
 El proyecto se organiza en componentes y vistas, permitiendo separar la lógica de presentación de la lógica de consumo de datos desde la API.
-
 Se utilizan componentes reutilizables para formularios, listados y vistas principales del sistema.
+
 --- 
+
 ## Estado del proyecto
 
 El proyecto se encuentra en desarrollo y corresponde a una implementación funcional para fines académicos, orientada a demostrar el uso de una arquitectura frontend-backend con base de datos NoSQL.
+
 ---
 ## Autora
 
