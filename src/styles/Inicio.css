@@ -1,3 +1,50 @@
+.carrusel .slick-slider {
+  width: 100%;
+  max-width: 1200px; /* opcional */
+}
+.carrusel .slick-slide {
+  display: flex !important;
+  justify-content: center;
+}
+.carrusel-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+/* Carrusel de inicio */
+.carrusel {
+   width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 30px 0;
+}
+
+.carrusel-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.carrusel-img-container {
+  width: 550px;
+  height: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #f4f4f4;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.carrusel-img {
+  width: 520px;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto;
+}
 .bloque {
   width: 100%;          /* cada bloque ocupa todo el ancho */
   height: 50px;        /* altura de ejemplo */
