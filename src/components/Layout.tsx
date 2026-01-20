@@ -78,7 +78,7 @@ export default function Layout() {
               <Button color="inherit" component={Link} to="/noticias">
                 Noticias
               </Button>
-              <Button color="inherit" component={Link} to="/contacto">
+              <Button color="inherit" component={Link} to="/contactos">
                 Contacto
               </Button>
             </Box>
