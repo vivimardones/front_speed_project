@@ -141,7 +141,7 @@ export default function Layout() {
                     sx={{ p: 0 }}
                     color="inherit"
                     component={Link}
-                    to="login"
+                    to="/login"
                   >
                     Inicia Sesión
                   </Button>
