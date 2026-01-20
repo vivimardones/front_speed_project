@@ -1,12 +1,23 @@
-import axios from "axios";
-import type{ UsuarioDto } from "../dtos/UsuarioDto";
+import authService from './authService';
+import type { UsuarioDto } from '../dtos/UsuarioDto';
 
-// URL de tu backend NestJS (ajusta si usas otro puerto o dominio)
-const API_URL = "http://localhost:3000/usuarios";
+// Usar la URL del archivo de env
+const API_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/usuarios`;
+
+// Obtener la instancia de axios con los interceptores de autenticación
+const getApiClient = () => authService.getAxiosInstance();
 
 // Obtener todos los usuarios
 export const getUsuarios = async (): Promise<UsuarioDto[]> => {
-  const res = await axios.get(API_URL);
+  const client = getApiClient();
+  const res = await client.get(API_URL);
+  return res.data;
+};
+
+// Obtener un usuario por ID
+export const getUsuario = async (id: string): Promise<UsuarioDto> => {
+  const client = getApiClient();
+  const res = await client.get(`${API_URL}/${id}`);
   return res.data;
 };
 
@@ -14,7 +25,8 @@ export const getUsuarios = async (): Promise<UsuarioDto[]> => {
 export const createUsuario = async (
   usuario: UsuarioDto
 ): Promise<UsuarioDto> => {
-  const res = await axios.post(API_URL, usuario);
+  const client = getApiClient();
+  const res = await client.post(API_URL, usuario);
   return res.data;
 };
 
@@ -23,7 +35,8 @@ export const updateUsuario = async (
   id: string,
   usuario: Partial<UsuarioDto>
 ): Promise<UsuarioDto> => {
-  const res = await axios.put(`${API_URL}/${id}`, usuario);
+  const client = getApiClient();
+  const res = await client.put(`${API_URL}/${id}`, usuario);
   return res.data;
 };
 
@@ -31,6 +44,7 @@ export const updateUsuario = async (
 export const deleteUsuario = async (
   id: string
 ): Promise<{ mensaje: string }> => {
-  const res = await axios.delete(`${API_URL}/${id}`);
+  const client = getApiClient();
+  const res = await client.delete(`${API_URL}/${id}`);
   return res.data;
 };

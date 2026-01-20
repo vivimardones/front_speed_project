@@ -35,13 +35,19 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background 0.2s, color 0.2s;
 }
 
-button:hover {
+button:hover:enabled {
   background-color: #0056b3;
 }
 
 .error {
+  a:disabled, button:disabled {
+    background-color: #cccccc !important;
+    color: #666 !important;
+    cursor: not-allowed;
+  }
   color: red;
   margin-top: 1rem;
   text-align: center;

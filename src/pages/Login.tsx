@@ -1,33 +1,34 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import authService from '../services/authService';
 import { logError } from '../utils/errorLogger';
 import '../styles/Login.css';
 
-
-interface LoginResponse {
-  token: string;
-  // agrega más campos si tu API devuelve otros datos
-}
-
 const Login: React.FC = () => {
-  const [correo, setCorreo] = useState<string>('');
+  const [idUsuario, setIdUsuario] = useState<string>('');
   const [contrasena, setContrasena] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
-      const response = await axios.post<LoginResponse>('https://tu-api.com/login', {
-        email: correo,
+      await authService.login({
+        idUsuario: idUsuario.trim(),
         password: contrasena,
       });
 
-      localStorage.setItem('token', response.data.token);
-      window.location.href = '/dashboard';
+      navigate('/inicio');
     } catch (err) {
-        logError(err, 'Login attempt failed');
+      const errorMessage = err instanceof Error ? err.message : 'Error al iniciar sesión';
+      setError(errorMessage);
+      logError(err, 'Login attempt failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,12 +36,14 @@ const Login: React.FC = () => {
     <div className="login-container">
       <h2>Iniciar Sesión</h2>
       <form onSubmit={handleSubmit}>
-        <label>Correo</label>
+        <label>ID Usuario</label>
         <input
-          type="email"
-          value={correo}
-          onChange={(e) => setCorreo(e.target.value)}
+          type="text"
+          value={idUsuario}
+          onChange={(e) => setIdUsuario(e.target.value)}
+          placeholder="Ingresa tu ID de usuario"
           required
+          disabled={loading}
         />
 
         <label>Contraseña</label>
@@ -48,13 +51,20 @@ const Login: React.FC = () => {
           type="password"
           value={contrasena}
           onChange={(e) => setContrasena(e.target.value)}
+          placeholder="Ingresa tu contraseña"
           required
+          disabled={loading}
         />
 
         {error && <p className="error">{error}</p>}
 
-        <button type="submit">Acceder</button>
-        <a href="/recuperar">¿Olvidaste tu contraseña?</a>
+        <button type="submit" disabled={loading}>
+          {loading ? 'Conectando...' : 'Acceder'}
+        </button>
+        <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <a href="/recuperar">¿Olvidaste tu contraseña?</a>
+          <a href="/registro" style={{ color: '#1976d2', fontWeight: 'bold' }}>¿No tienes cuenta? Crear cuenta</a>
+        </div>
       </form>
     </div>
   );

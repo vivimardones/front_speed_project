@@ -29,14 +29,19 @@ const apoderadoPages = [
 ];
 
 export default function Layout() {
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const navigate = useNavigate();
-  const [user, setUser] = React.useState<{ name: string; rol: string } | null>({
-    name: "Nathalia Valle",
-    rol: "admin", // puede ser "admin", "deportista" o "apoderado"
-  });
+  const [user, setUser] = React.useState<{ nombre: string; rol: string } | null>(null);
+
+  React.useEffect(() => {
+    // Obtener usuario desde el servicio de autenticación
+    const authUser = localStorage.getItem('user');
+    if (authUser) {
+      setUser(JSON.parse(authUser));
+    } else {
+      setUser(null);
+    }
+  }, []);
 
   let pagesToShow: { label: string; path: string }[] = [];
 
@@ -86,7 +91,7 @@ export default function Layout() {
                       sx={{ p: 0 }}
                       color="inherit"
                     >
-                      {user.name}
+                      {user.nombre}
                     </Button>
                   </Tooltip>
                   <Menu
@@ -110,7 +115,7 @@ export default function Layout() {
                         key={page.label}
                         component={Link}
                         to={page.path}
-                        onClick={handleCloseUserMenu} // 👈 esto cierra el menú al hacer clic
+                        onClick={handleCloseUserMenu} 
                       >
                         <Typography sx={{ textAlign: "center" }}>
                           {page.label}
