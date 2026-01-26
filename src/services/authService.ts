@@ -6,13 +6,13 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const API_AUTH_URL = `${API_BASE_URL}/auth`;
 
 export interface LoginResponse {
-  idUsuario: string;
+  email: string;
   nombre: string;
   rol: string;
 }
 
 export interface AuthUser {
-  idUsuario: string;
+  email: string;
   nombre: string;
   rol: string;
 }
@@ -72,9 +72,9 @@ class AuthService {
       // Aquí podrías guardar el token si tu API lo devuelve
       // De momento guardamos los datos del usuario
       localStorage.setItem('user', JSON.stringify(response.data));
-      localStorage.setItem('token', response.data.idUsuario);
+      localStorage.setItem('token', response.data.email);
       
-      this.token = response.data.idUsuario;
+      this.token = response.data.email;
       this.setAuthHeader();
       
       return response.data;
