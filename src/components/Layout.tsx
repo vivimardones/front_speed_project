@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { Link, Outlet } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import logoSP from "../images/LogoSP.png";
 
 const adminPages = [
@@ -31,27 +32,22 @@ const apoderadoPages = [
 export default function Layout() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const navigate = useNavigate();
-  const [user, setUser] = React.useState<{ nombre: string; rol: string } | null>(null);
+  const { user, logout } = useAuth();
 
-  React.useEffect(() => {
-    // Obtener usuario desde el servicio de autenticación
-    const authUser = localStorage.getItem('user');
-    if (authUser) {
-      setUser(JSON.parse(authUser));
-    } else {
-      setUser(null);
+  const pagesToShow = React.useMemo(() => {
+    if (!user) return [];
+    
+    const rol = user.idRol?.toLowerCase();
+    
+    if (rol === "admin") {
+      return adminPages;
+    } else if (rol === "deportista") {
+      return deportistaPages;
+    } else if (rol === "apoderado") {
+      return apoderadoPages;
     }
-  }, []);
-
-  let pagesToShow: { label: string; path: string }[] = [];
-
-  if (user?.rol === "admin") {
-    pagesToShow = adminPages;
-  } else if (user?.rol === "deportista") {
-    pagesToShow = deportistaPages;
-  } else if (user?.rol === "apoderado") {
-    pagesToShow = apoderadoPages;
-  }
+    return [];
+  }, [user]);
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
@@ -125,7 +121,7 @@ export default function Layout() {
                     <MenuItem
                       onClick={() => {
                         handleCloseUserMenu();
-                        setUser(null);
+                        logout();
                         navigate("/login");
                       }}
                     >

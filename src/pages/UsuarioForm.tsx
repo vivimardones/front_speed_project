@@ -17,7 +17,7 @@ export default function UsuariosForm() {
     idUsuario: "",
     rut: "",
     nombreCompleto: "",
-    correo: "",
+    email: "",
     contraseña: "",
     rol: "deportista",
     fechaNacimiento: "",
