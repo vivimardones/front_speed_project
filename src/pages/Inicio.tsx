@@ -1,5 +1,6 @@
-import { Typography, Container } from "@mui/material";
+import { Typography, Container, Box } from "@mui/material";
 import Slider from "react-slick";
+import { useAuth } from "../hooks/useAuth";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "../styles/Inicio.css";
@@ -8,7 +9,6 @@ import patin1 from "../images/patin_1.jpg";
 import patin2 from "../images/patin_2.jpg";
 import patin3 from "../images/patin_3.jpg";
 
-<Container maxWidth="sm"></Container>;
 const noticias = [
   {
     titulo: "Campeonato Nacional",
@@ -28,6 +28,7 @@ const noticias = [
 ];
 
 export default function Inicio() {
+  const { user, isAuthenticated } = useAuth();
   const sliderSettings = {
     dots: true,
     infinite: true,
@@ -39,6 +40,15 @@ export default function Inicio() {
 
   return (
     <div>
+      {/* Saludo personalizado */}
+      {isAuthenticated && user && (
+        <Box sx={{ mb: 3, p: 2, backgroundColor: "#f5f5f5", borderRadius: 1 }}>
+          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#1976d2" }}>
+            Bienvenido, {user.nombre}!
+          </Typography>
+        </Box>
+      )}
+
       {/* Banner principal */}
       <div className="banner">
         <Typography variant="h4" align="center">
