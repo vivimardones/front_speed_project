@@ -2,17 +2,22 @@ import React from "react";
 import "../styles/Login.css";
 import { useState } from "react";
 import { registrarUsuario } from "../services/registroService";
+import { useAuth } from "../hooks/useAuth";
 
 function Registro() {
+  const { user: currentUser } = useAuth();
   const [passwordMatchError, setPasswordMatchError] = useState("");
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [repetirPassword, setRepetirPassword] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState("");
+  const [rol, setRol] = useState("deportista");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const isAdmin = currentUser?.idRol?.toLowerCase() === "admin";
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,7 +29,7 @@ function Registro() {
     }
     setLoading(true);
     try {
-      const data = { nombre, email, password, fechaNacimiento };
+      const data = { nombre, email, password, fechaNacimiento, idRol: rol };
       await registrarUsuario(data);
       setSuccess("¡Registro exitoso! Ahora puedes iniciar sesión.");
       setNombre("");
@@ -32,6 +37,7 @@ function Registro() {
       setPassword("");
       setRepetirPassword("");
       setFechaNacimiento("");
+      setRol("deportista");
     } catch (err) {
       setError("Error al registrar usuario.");
       console.error(err);
@@ -46,6 +52,7 @@ function Registro() {
     password.trim() !== "" &&
     repetirPassword.trim() !== "" &&
     fechaNacimiento.trim() !== "" &&
+    rol.trim() !== "" &&
     password === repetirPassword &&
     !passwordMatchError &&
     !error;
@@ -123,6 +130,24 @@ function Registro() {
           onChange={(e) => setFechaNacimiento(e.target.value)}
           disabled={loading}
         />
+        <label htmlFor="rol">Elegir Rol</label>
+        <select
+          id="rol"
+          name="rol"
+          required
+          value={rol}
+          onChange={(e) => setRol(e.target.value)}
+          disabled={loading}
+          style={{
+            padding: "0.75rem",
+            borderRadius: "4px",
+            border: "1px solid #ccc",
+          }}
+        >
+          {isAdmin && <option value="admin">Administrador</option>}
+          <option value="deportista">Deportista</option>
+          <option value="apoderado">Apoderado</option>
+        </select>
 
         {error && <p className="error">{error}</p>}
         {success && (

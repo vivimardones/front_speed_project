@@ -21,6 +21,7 @@ const adminPages = [
   { label: "Pagos", path: "/pagos" },
   { label: "Asistencia", path: "/asistencia" },
   { label: "Campeonatos", path: "/campeonatos" },
+  { label: "Inscribir nuevo usuario", path: "/registro" },
 ];
 
 const deportistaPages = [{ label: "Profile", path: "/profile" }];
