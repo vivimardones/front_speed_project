@@ -17,6 +17,9 @@ import CampeonatosForm from "./pages/CampeonatosForm";
 import NoticiasForm from "./pages/NoticiasForm";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PagApoderado from "./pages/PagApoderado";
+import PagDeportista from "./pages/PagDeportista";
+import SuperAdmin from "./pages/SuperAdmin";
 
 function App() {
   return (
@@ -29,12 +32,78 @@ function App() {
         <Route path="noticias" element={<NoticiasForm />} />
         <Route path="contactos" element={<Contactos />} />
         {/* Rutas protegidas */}
-        <Route path="usuarios" element={<ProtectedRoute><UsuariosForm /></ProtectedRoute>} />
-        <Route path="vehiculos" element={<ProtectedRoute><VehiculosForm /></ProtectedRoute>} />
-        <Route path="pagos" element={<ProtectedRoute><PagosForm /></ProtectedRoute>} />
-        <Route path="asistencia" element={<ProtectedRoute><AsistenciaForm /></ProtectedRoute>} />
-        <Route path="inscripciones" element={<ProtectedRoute><InscripcionesForm /></ProtectedRoute>} />
-        <Route path="campeonatos" element={<ProtectedRoute><CampeonatosForm /></ProtectedRoute>} />
+        <Route
+          path="usuarios"
+          element={
+            <ProtectedRoute>
+              <UsuariosForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="vehiculos"
+          element={
+            <ProtectedRoute>
+              <VehiculosForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="pagos"
+          element={
+            <ProtectedRoute>
+              <PagosForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="asistencia"
+          element={
+            <ProtectedRoute>
+              <AsistenciaForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="inscripciones"
+          element={
+            <ProtectedRoute>
+              <InscripcionesForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="campeonatos"
+          element={
+            <ProtectedRoute>
+              <CampeonatosForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="PagDeportista"
+          element={
+            <ProtectedRoute>
+              <PagDeportista />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="PagApoderado"
+          element={
+            <ProtectedRoute>
+              <PagApoderado />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="SuperAdmin"
+          element={
+            <ProtectedRoute>
+              <SuperAdmin />
+            </ProtectedRoute>
+          }
+        />
       </Route>
       {/* Redirigir rutas no encontradas a inicio */}
       <Route path="*" element={<Navigate to="/inicio" replace />} />

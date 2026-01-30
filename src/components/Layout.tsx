@@ -24,10 +24,11 @@ const adminPages = [
   { label: "Inscribir nuevo usuario", path: "/registro" },
 ];
 
-const deportistaPages = [{ label: "Profile", path: "/profile" }];
+const deportistaPages = [{ label: "Mi Pagina", path: "/PagDeportista" }];
+const superAdminPages = [{ label: "Configuraciones", path: "/SuperAdmin" }];
 const apoderadoPages = [
-  { label: "Profile", path: "/profile" },
-  { label: "Deportistas", path: "usuarios" },
+  { label: "Perfil", path: "/PagApoderado" },
+  { label: "Deportistas", path: "/usuarios" },
 ];
 
 export default function Layout() {
@@ -46,6 +47,8 @@ export default function Layout() {
       return deportistaPages;
     } else if (rol === "apoderado") {
       return apoderadoPages;
+    } else if (rol === "superadmin") {
+      return [...adminPages, ...superAdminPages];
     }
     return [];
   }, [user]);
@@ -110,9 +113,15 @@ export default function Layout() {
                     {pagesToShow.map((page) => (
                       <MenuItem
                         key={page.label}
-                        component={Link}
-                        to={page.path}
-                        onClick={handleCloseUserMenu} 
+                        onClick={() => {
+                          handleCloseUserMenu();
+                          if (page.label === "Configuraciones") {
+                            // Abrir SuperAdmin en una nueva ventana
+                            window.open(page.path, "_blank");
+                          } else {
+                            navigate(page.path);
+                          }
+                        }}
                       >
                         <Typography sx={{ textAlign: "center" }}>
                           {page.label}
