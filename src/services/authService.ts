@@ -5,25 +5,34 @@ import type { LoginDto } from '../dtos/LoginDto';
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const API_AUTH_URL = `${API_BASE_URL}/auth`;
 
+// Interface actualizada según la respuesta REAL del backend
 export interface ApiLoginResponse {
-  id: string;
-  nombre: string;
-  email: string;
-  fechaNacimiento: string;
-  idRol: string;
-  timestamp: string;
+  success: boolean;
+  message: string;
+  token: string;  // ← El JWT token
+  usuario: {
+    id: string;
+    loginId: string;
+    correo: string;  // ← Backend usa "correo"
+    primerNombre: string;
+    apellidoPaterno: string;
+    verificado: boolean;
+    roles: string[];  // ← Array de roles
+  };
 }
 
 export interface LoginResponse {
   email: string;
   nombre: string;
-  idRol: string;
+  roles: string[];  // ← Cambiar a array
+  userId: string;
 }
 
 export interface AuthUser {
   email: string;
   nombre: string;
-  idRol: string;
+  roles: string[];  // ← Array
+  userId: string;
 }
 
 class AuthService {
@@ -62,6 +71,7 @@ class AuthService {
       (error) => {
         if (error.response?.status === 401) {
           this.logout();
+          window.location.href = '/login';
         }
         return Promise.reject(error);
       }
@@ -76,20 +86,25 @@ class AuthService {
 
   async login(dto: LoginDto): Promise<LoginResponse> {
     try {
-      const response = await axios.post<ApiLoginResponse>(`${API_AUTH_URL}/login`, dto);
+      // Cambiar email a correo y password a password
+      const response = await axios.post<ApiLoginResponse>(`${API_AUTH_URL}/login`, {
+        correo: dto.email,  // ← Backend espera "correo"
+        password: dto.password
+      });
       
-      // Mapear idRol a rol
+      // Mapear correctamente los datos del backend
       const userData: LoginResponse = {
-        email: response.data.email,
-        nombre: response.data.nombre,
-        idRol: response.data.idRol,
+        email: response.data.usuario.correo,
+        nombre: `${response.data.usuario.primerNombre} ${response.data.usuario.apellidoPaterno}`,
+        roles: response.data.usuario.roles,  // ← Array completo
+        userId: response.data.usuario.id,
       };
       
-      // Guardar datos del usuario
+      // Guardar el TOKEN JWT real (NO el email)
       localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('token', response.data.email);
+      localStorage.setItem('token', response.data.token);  // ← ¡EL TOKEN REAL!
       
-      this.token = response.data.email;
+      this.token = response.data.token;
       this.setAuthHeader();
       
       // Disparar evento para actualizar el contexto
@@ -98,7 +113,8 @@ class AuthService {
       return userData;
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        throw new Error(error.response?.data?.message || 'Error al iniciar sesión');
+        const message = error.response?.data?.message || 'Error al iniciar sesión';
+        throw new Error(message);
       }
       throw error;
     }
@@ -126,6 +142,12 @@ class AuthService {
 
   getAxiosInstance(): AxiosInstance {
     return this.axiosInstance;
+  }
+  
+  // Método helper para verificar roles
+  hasRole(role: string): boolean {
+    const user = this.getUser();
+    return user?.roles?.includes(role) || false;
   }
 }
 
