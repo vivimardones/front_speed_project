@@ -5,33 +5,32 @@ import type { LoginDto } from '../dtos/LoginDto';
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const API_AUTH_URL = `${API_BASE_URL}/auth`;
 
-// Interface actualizada según la respuesta REAL del backend
 export interface ApiLoginResponse {
   success: boolean;
   message: string;
-  token: string;  // ← El JWT token
+  token: string;
   usuario: {
     id: string;
     loginId: string;
-    correo: string;  // ← Backend usa "correo"
+    correo: string;
     primerNombre: string;
     apellidoPaterno: string;
     verificado: boolean;
-    roles: string[];  // ← Array de roles
+    roles: string[];
   };
 }
 
 export interface LoginResponse {
-  email: string;
+  correo: string;
   nombre: string;
-  roles: string[];  // ← Cambiar a array
+  roles: string[];
   userId: string;
 }
 
 export interface AuthUser {
-  email: string;
+  correo: string;
   nombre: string;
-  roles: string[];  // ← Array
+  roles: string[];
   userId: string;
 }
 
@@ -47,11 +46,9 @@ class AuthService {
       },
     });
 
-    // Cargar token del localStorage si existe
     this.token = localStorage.getItem('token');
     this.setAuthHeader();
 
-    // Interceptor para agregar token a todas las peticiones
     this.axiosInstance.interceptors.request.use(
       (config) => {
         const token = localStorage.getItem('token');
@@ -65,7 +62,6 @@ class AuthService {
       }
     );
 
-    // Interceptor para manejar errores 401
     this.axiosInstance.interceptors.response.use(
       (response) => response,
       (error) => {
@@ -86,28 +82,24 @@ class AuthService {
 
   async login(dto: LoginDto): Promise<LoginResponse> {
     try {
-      // Cambiar email a correo y password a password
       const response = await axios.post<ApiLoginResponse>(`${API_AUTH_URL}/login`, {
-        correo: dto.email,  // ← Backend espera "correo"
+        correo: dto.correo,
         password: dto.password
       });
       
-      // Mapear correctamente los datos del backend
       const userData: LoginResponse = {
-        email: response.data.usuario.correo,
+        correo: response.data.usuario.correo,
         nombre: `${response.data.usuario.primerNombre} ${response.data.usuario.apellidoPaterno}`,
-        roles: response.data.usuario.roles,  // ← Array completo
+        roles: response.data.usuario.roles,
         userId: response.data.usuario.id,
       };
       
-      // Guardar el TOKEN JWT real (NO el email)
       localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('token', response.data.token);  // ← ¡EL TOKEN REAL!
+      localStorage.setItem('token', response.data.token);
       
       this.token = response.data.token;
       this.setAuthHeader();
       
-      // Disparar evento para actualizar el contexto
       window.dispatchEvent(new CustomEvent('authUpdate', { detail: userData }));
       
       return userData;
@@ -144,7 +136,6 @@ class AuthService {
     return this.axiosInstance;
   }
   
-  // Método helper para verificar roles
   hasRole(role: string): boolean {
     const user = this.getUser();
     return user?.roles?.includes(role) || false;

@@ -5,7 +5,7 @@ import { logError } from '../utils/errorLogger';
 import '../styles/Login.css';
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState<string>('');
+  const [correo, setCorreo] = useState<string>('');
   const [contrasena, setContrasena] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -18,7 +18,7 @@ const Login: React.FC = () => {
 
     try {
       await authService.login({
-        email: email.trim(),
+        correo: correo.trim(),
         password: contrasena,
       });
 
@@ -39,8 +39,8 @@ const Login: React.FC = () => {
         <label> Correo</label>
         <input
           type="text"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={correo}
+          onChange={(e) => setCorreo(e.target.value)}
           placeholder="Ingresa tu correo"
           required
           disabled={loading}

@@ -2,7 +2,7 @@ export interface UsuarioDto {
   idUsuario: string;
   rut: string;
   nombreCompleto: string;
-  email: string;
+  correo: string;
   contraseña: string;
   rol: "admin" | "socio" | "deportista";
   fechaNacimiento: string;

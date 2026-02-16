@@ -27,10 +27,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return () => window.removeEventListener('authUpdate', handleAuthUpdate);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (correo: string, password: string) => {
     setLoading(true);
     try {
-      const response = await authService.login({ email, password });
+      const response = await authService.login({ correo, password });
       setUser(response);
     } finally {
       setLoading(false);
