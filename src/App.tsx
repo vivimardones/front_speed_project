@@ -1,9 +1,4 @@
-import {
-  // ...existing code...
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "./components/Layout";
 import Contactos from "./pages/Contactos";
 import Registro from "./pages/Registro";
@@ -20,22 +15,52 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PagApoderado from "./pages/PagApoderado";
 import PagDeportista from "./pages/PagDeportista";
 import SuperAdmin from "./pages/SuperAdmin";
+import AccesoDenegado from "./pages/AccesoDenegado";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
+        {/* Rutas públicas */}
         <Route path="login" element={<Login />} />
         <Route path="registro" element={<Registro />} />
         <Route index element={<Inicio />} />
         <Route path="inicio" element={<Inicio />} />
         <Route path="noticias" element={<NoticiasForm />} />
         <Route path="contactos" element={<Contactos />} />
-        {/* Rutas protegidas */}
+        <Route path="acceso-denegado" element={<AccesoDenegado />} />
+
+        {/* Dashboards por rol */}
+        <Route
+          path="deportista/dashboard"
+          element={
+            <ProtectedRoute roles={['deportista']}>
+              <PagDeportista />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="apoderado/dashboard"
+          element={
+            <ProtectedRoute roles={['apoderado']}>
+              <PagApoderado />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/dashboard"
+          element={
+            <ProtectedRoute roles={['administrador']}>
+              <SuperAdmin />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Rutas administrativas */}
         <Route
           path="usuarios"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={['administrador']}>
               <UsuariosForm />
             </ProtectedRoute>
           }
@@ -43,7 +68,7 @@ function App() {
         <Route
           path="vehiculos"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={['administrador', 'dirigente']}>
               <VehiculosForm />
             </ProtectedRoute>
           }
@@ -51,7 +76,7 @@ function App() {
         <Route
           path="pagos"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={['administrador', 'dirigente']}>
               <PagosForm />
             </ProtectedRoute>
           }
@@ -59,7 +84,7 @@ function App() {
         <Route
           path="asistencia"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={['administrador', 'dirigente', 'entrenador']}>
               <AsistenciaForm />
             </ProtectedRoute>
           }
@@ -67,7 +92,7 @@ function App() {
         <Route
           path="inscripciones"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={['administrador', 'dirigente']}>
               <InscripcionesForm />
             </ProtectedRoute>
           }
@@ -75,37 +100,28 @@ function App() {
         <Route
           path="campeonatos"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute roles={['administrador', 'dirigente']}>
               <CampeonatosForm />
             </ProtectedRoute>
           }
         />
+
+        {/* Rutas legacy (deprecar después) */}
         <Route
           path="PagDeportista"
-          element={
-            <ProtectedRoute>
-              <PagDeportista />
-            </ProtectedRoute>
-          }
+          element={<Navigate to="/deportista/dashboard" replace />}
         />
         <Route
           path="PagApoderado"
-          element={
-            <ProtectedRoute>
-              <PagApoderado />
-            </ProtectedRoute>
-          }
+          element={<Navigate to="/apoderado/dashboard" replace />}
         />
         <Route
           path="SuperAdmin"
-          element={
-            <ProtectedRoute>
-              <SuperAdmin />
-            </ProtectedRoute>
-          }
+          element={<Navigate to="/admin/dashboard" replace />}
         />
       </Route>
-      {/* Redirigir rutas no encontradas a inicio */}
+
+      {/* Ruta 404 */}
       <Route path="*" element={<Navigate to="/inicio" replace />} />
     </Routes>
   );

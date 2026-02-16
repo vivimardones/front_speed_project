@@ -36,7 +36,7 @@ const Login: React.FC = () => {
     <div className="login-container">
       <h2>Iniciar Sesión</h2>
       <form onSubmit={handleSubmit}>
-        <label> Correo</label>
+        <label>Correo</label>
         <input
           type="text"
           value={correo}
