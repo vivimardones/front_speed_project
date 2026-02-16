@@ -5,6 +5,7 @@ import type { LoginDto } from '../dtos/LoginDto';
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 const API_AUTH_URL = `${API_BASE_URL}/auth`;
 
+// Respuesta del backend al hacer login
 export interface ApiLoginResponse {
   success: boolean;
   message: string;
@@ -46,9 +47,11 @@ class AuthService {
       },
     });
 
+    // Cargar token si existe
     this.token = localStorage.getItem('token');
     this.setAuthHeader();
 
+    // Agregar token a todas las peticiones
     this.axiosInstance.interceptors.request.use(
       (config) => {
         const token = localStorage.getItem('token');
@@ -62,6 +65,7 @@ class AuthService {
       }
     );
 
+    // Manejar errores 401 (no autenticado)
     this.axiosInstance.interceptors.response.use(
       (response) => response,
       (error) => {
@@ -87,6 +91,7 @@ class AuthService {
         password: dto.password
       });
       
+      // Mapear datos del backend al formato del frontend
       const userData: LoginResponse = {
         correo: response.data.usuario.correo,
         nombre: `${response.data.usuario.primerNombre} ${response.data.usuario.apellidoPaterno}`,
@@ -94,12 +99,14 @@ class AuthService {
         userId: response.data.usuario.id,
       };
       
+      // Guardar en localStorage
       localStorage.setItem('user', JSON.stringify(userData));
       localStorage.setItem('token', response.data.token);
       
       this.token = response.data.token;
       this.setAuthHeader();
       
+      // Notificar actualización de auth
       window.dispatchEvent(new CustomEvent('authUpdate', { detail: userData }));
       
       return userData;
@@ -136,6 +143,7 @@ class AuthService {
     return this.axiosInstance;
   }
   
+  // Verificar si el usuario tiene un rol específico
   hasRole(role: string): boolean {
     const user = this.getUser();
     return user?.roles?.includes(role) || false;
