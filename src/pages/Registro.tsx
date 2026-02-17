@@ -17,7 +17,7 @@ function Registro() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const isAdmin = currentUser?.roles?.includes("admin");
+  const isAdmin = currentUser?.roles?.includes("administrador");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
