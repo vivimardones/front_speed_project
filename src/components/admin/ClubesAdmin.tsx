@@ -26,6 +26,8 @@ import {
   Card,
   CardMedia,
   CardContent,
+  Autocomplete,
+  Avatar,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -40,7 +42,9 @@ import {
   deleteClub,
   uploadClubImage,
 } from "../../services/clubService";
+import { getUsuarios } from "../../services/usuariosService";
 import type { Club, CreateClubDto } from "../../types/club.types";
+import type { UsuarioDto } from "../../dtos/UsuarioDto";
 
 const steps = [
   "Información Básica",
@@ -106,8 +110,13 @@ export default function ClubesAdmin() {
   const [insigniaPreview, setInsigniaPreview] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
 
+  // Nuevo estado para usuarios
+  const [usuarios, setUsuarios] = useState<UsuarioDto[]>([]);
+  const [loadingUsuarios, setLoadingUsuarios] = useState(false);
+
   useEffect(() => {
     loadClubes();
+    loadUsuarios();
   }, []);
 
   const loadClubes = async () => {
@@ -122,6 +131,24 @@ export default function ClubesAdmin() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadUsuarios = async () => {
+    try {
+      setLoadingUsuarios(true);
+      const data = await getUsuarios();
+      setUsuarios(data || []);
+    } catch (err) {
+      console.error("Error al cargar usuarios:", err);
+    } finally {
+      setLoadingUsuarios(false);
+    }
+  };
+
+  // Función para obtener el usuario por ID
+  const getUsuarioById = (id?: string) => {
+    if (!id) return null;
+    return usuarios.find((u) => u.idUsuario === id);
   };
 
   // VALIDACIONES
@@ -401,70 +428,218 @@ export default function ClubesAdmin() {
         return (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              Todos los campos son opcionales
+              Selecciona los usuarios que ocuparán los cargos directivos
             </Typography>
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <TextField
-                fullWidth
-                label="Presidente"
-                value={formData.dirigentes?.presidente || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    dirigentes: {
-                      ...formData.dirigentes,
-                      presidente: e.target.value,
-                    },
-                  })
-                }
-              />
-              <TextField
-                fullWidth
-                label="Secretario"
-                value={formData.dirigentes?.secretario || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    dirigentes: {
-                      ...formData.dirigentes,
-                      secretario: e.target.value,
-                    },
-                  })
-                }
-              />
-            </Box>
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <TextField
-                fullWidth
-                label="Tesorero"
-                value={formData.dirigentes?.tesorero || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    dirigentes: {
-                      ...formData.dirigentes,
-                      tesorero: e.target.value,
-                    },
-                  })
-                }
-              />
-              <TextField
-                fullWidth
-                label="Director"
-                value={formData.dirigentes?.director || ""}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    dirigentes: {
-                      ...formData.dirigentes,
-                      director: e.target.value,
-                    },
-                  })
-                }
-              />
-            </Box>
+
+            {loadingUsuarios ? (
+              <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
+                <CircularProgress size={30} />
+              </Box>
+            ) : (
+              <>
+                {/* Presidente */}
+                <Autocomplete
+                  options={usuarios}
+                  getOptionLabel={(option) =>
+                    `${option.nombreCompleto} (${option.correo})`
+                  }
+                  value={getUsuarioById(formData.dirigentes?.presidente)}
+                  onChange={(_, newValue) => {
+                    setFormData({
+                      ...formData,
+                      dirigentes: {
+                        ...formData.dirigentes,
+                        presidente: newValue?.idUsuario || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Presidente" />
+                  )}
+                  renderOption={(props, option) => (
+                    <Box component="li" {...props}>
+                      <Avatar sx={{ mr: 2, width: 32, height: 32 }}>
+                        {option.nombreCompleto?.charAt(0)}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="body2">
+                          {option.nombreCompleto}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {option.correo} • {option.rol}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  )}
+                  noOptionsText="No hay usuarios disponibles"
+                />
+
+                {/* Secretario */}
+                <Autocomplete
+                  options={usuarios}
+                  getOptionLabel={(option) =>
+                    `${option.nombreCompleto} (${option.correo})`
+                  }
+                  value={getUsuarioById(formData.dirigentes?.secretario)}
+                  onChange={(_, newValue) => {
+                    setFormData({
+                      ...formData,
+                      dirigentes: {
+                        ...formData.dirigentes,
+                        secretario: newValue?.idUsuario || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Secretario" />
+                  )}
+                  renderOption={(props, option) => (
+                    <Box component="li" {...props}>
+                      <Avatar sx={{ mr: 2, width: 32, height: 32 }}>
+                        {option.nombreCompleto?.charAt(0)}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="body2">
+                          {option.nombreCompleto}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {option.correo} • {option.rol}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  )}
+                  noOptionsText="No hay usuarios disponibles"
+                />
+
+                {/* Tesorero */}
+                <Autocomplete
+                  options={usuarios}
+                  getOptionLabel={(option) =>
+                    `${option.nombreCompleto} (${option.correo})`
+                  }
+                  value={getUsuarioById(formData.dirigentes?.tesorero)}
+                  onChange={(_, newValue) => {
+                    setFormData({
+                      ...formData,
+                      dirigentes: {
+                        ...formData.dirigentes,
+                        tesorero: newValue?.idUsuario || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Tesorero" />
+                  )}
+                  renderOption={(props, option) => (
+                    <Box component="li" {...props}>
+                      <Avatar sx={{ mr: 2, width: 32, height: 32 }}>
+                        {option.nombreCompleto?.charAt(0)}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="body2">
+                          {option.nombreCompleto}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {option.correo} • {option.rol}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  )}
+                  noOptionsText="No hay usuarios disponibles"
+                />
+
+                {/* Director */}
+                <Autocomplete
+                  options={usuarios}
+                  getOptionLabel={(option) =>
+                    `${option.nombreCompleto} (${option.correo})`
+                  }
+                  value={getUsuarioById(formData.dirigentes?.director)}
+                  onChange={(_, newValue) => {
+                    setFormData({
+                      ...formData,
+                      dirigentes: {
+                        ...formData.dirigentes,
+                        director: newValue?.idUsuario || "",
+                      },
+                    });
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Director" />
+                  )}
+                  renderOption={(props, option) => (
+                    <Box component="li" {...props}>
+                      <Avatar sx={{ mr: 2, width: 32, height: 32 }}>
+                        {option.nombreCompleto?.charAt(0)}
+                      </Avatar>
+                      <Box>
+                        <Typography variant="body2">
+                          {option.nombreCompleto}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {option.correo} • {option.rol}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  )}
+                  noOptionsText="No hay usuarios disponibles"
+                />
+
+                {/* Vista previa de dirigentes seleccionados */}
+                {(formData.dirigentes?.presidente ||
+                  formData.dirigentes?.secretario ||
+                  formData.dirigentes?.tesorero ||
+                  formData.dirigentes?.director) && (
+                  <Box
+                    sx={{
+                      mt: 2,
+                      p: 2,
+                      bgcolor: "background.paper",
+                      borderRadius: 1,
+                    }}
+                  >
+                    <Typography variant="subtitle2" gutterBottom>
+                      Dirigentes seleccionados:
+                    </Typography>
+                    <Box
+                      sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}
+                    >
+                      {formData.dirigentes?.presidente && (
+                        <Chip
+                          label={`Presidente: ${getUsuarioById(formData.dirigentes.presidente)?.nombreCompleto}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      )}
+                      {formData.dirigentes?.secretario && (
+                        <Chip
+                          label={`Secretario: ${getUsuarioById(formData.dirigentes.secretario)?.nombreCompleto}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      )}
+                      {formData.dirigentes?.tesorero && (
+                        <Chip
+                          label={`Tesorero: ${getUsuarioById(formData.dirigentes.tesorero)?.nombreCompleto}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      )}
+                      {formData.dirigentes?.director && (
+                        <Chip
+                          label={`Director: ${getUsuarioById(formData.dirigentes.director)?.nombreCompleto}`}
+                          color="primary"
+                          variant="outlined"
+                        />
+                      )}
+                    </Box>
+                  </Box>
+                )}
+              </>
+            )}
           </Box>
         );
+
       case 2:
         return (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
