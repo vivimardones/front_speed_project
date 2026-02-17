@@ -398,8 +398,25 @@ export default function ClubesAdmin() {
 
       handleCloseDialog();
       await loadClubes();
-    } catch (err) {
-      setError("Error al guardar el club");
+    } catch (err: unknown) {
+      // Capturar mensaje de error específico si está disponible
+      if (err && typeof err === "object" && "response" in err) {
+        const error = err as {
+          response?: { status?: number; data?: { message?: string } };
+        };
+
+        if (error.response?.status === 409) {
+          setError(
+            error.response?.data?.message ||
+              "Ya existe un club con estos datos",
+          );
+        } else {
+          setError("Error al guardar el club");
+        }
+      } else {
+        setError("Error al guardar el club");
+      }
+
       console.error(err);
     } finally {
       setUploadingImage(false);
