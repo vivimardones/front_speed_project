@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -79,6 +79,16 @@ const INITIAL_FORM_DATA: CreateClubDto = {
   vigencia: true,
 };
 
+interface FormErrors {
+  nombreFantasia?: string;
+  nombreReal?: string;
+  fechaIniciacion?: string;
+  rut?: string;
+  correo?: string;
+  telefono?: string;
+  sitioWeb?: string;
+}
+
 export default function ClubesAdmin() {
   const [clubs, setClubs] = useState<Club[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
@@ -87,6 +97,7 @@ export default function ClubesAdmin() {
   const [error, setError] = useState<string | null>(null);
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState<CreateClubDto>(INITIAL_FORM_DATA);
+  const [formErrors, setFormErrors] = useState<FormErrors>({});
 
   // Estados para imágenes
   const [escudoFile, setEscudoFile] = useState<File | null>(null);
@@ -111,6 +122,72 @@ export default function ClubesAdmin() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // VALIDACIONES
+  const validateRut = (rut: string): boolean => {
+    if (!rut) return true; // Opcional
+    const rutRegex = /^[0-9]{1,2}\.[0-9]{3}\.[0-9]{3}-[0-9kK]{1}$/;
+    return rutRegex.test(rut);
+  };
+
+  const validateEmail = (email: string): boolean => {
+    if (!email) return true; // Opcional
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone: string): boolean => {
+    if (!phone) return true; // Opcional
+    const phoneRegex = /^\+?[0-9\s\-()]{8,20}$/;
+    return phoneRegex.test(phone);
+  };
+
+  const validateUrl = (url: string): boolean => {
+    if (!url) return true; // Opcional
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const validateStep = (step: number): boolean => {
+    const errors: FormErrors = {};
+
+    switch (step) {
+      case 0: // Información Básica
+        if (!formData.nombreFantasia || formData.nombreFantasia.trim() === "") {
+          errors.nombreFantasia = "El nombre fantasía es obligatorio";
+        }
+        if (!formData.nombreReal || formData.nombreReal.trim() === "") {
+          errors.nombreReal = "El nombre real es obligatorio";
+        }
+        if (!formData.fechaIniciacion) {
+          errors.fechaIniciacion = "La fecha de iniciación es obligatoria";
+        }
+        if (formData.rut && !validateRut(formData.rut)) {
+          errors.rut = "Formato de RUT inválido (ej: 12.345.678-9)";
+        }
+        break;
+
+      case 2: // Contacto y Ubicación
+        if (formData.correo && !validateEmail(formData.correo)) {
+          errors.correo = "Formato de correo inválido";
+        }
+        if (formData.telefono && !validatePhone(formData.telefono)) {
+          errors.telefono = "Formato de teléfono inválido";
+        }
+        if (formData.sitioWeb && !validateUrl(formData.sitioWeb)) {
+          errors.sitioWeb =
+            "URL inválida (debe comenzar con http:// o https://)";
+        }
+        break;
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleOpenDialog = (club?: Club) => {
@@ -139,6 +216,7 @@ export default function ClubesAdmin() {
       setEditingId(null);
     }
     setActiveStep(0);
+    setFormErrors({});
     setOpenDialog(true);
   };
 
@@ -150,14 +228,18 @@ export default function ClubesAdmin() {
     setInsigniaFile(null);
     setEscudoPreview(null);
     setInsigniaPreview(null);
+    setFormErrors({});
   };
 
   const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    if (validateStep(activeStep)) {
+      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    }
   };
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setFormErrors({}); // Limpiar errores al retroceder
   };
 
   const handleImageChange = (
@@ -166,6 +248,18 @@ export default function ClubesAdmin() {
   ) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validar tamaño (máx 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError(`La imagen ${type} no puede superar los 5MB`);
+        return;
+      }
+
+      // Validar tipo
+      if (!file.type.startsWith("image/")) {
+        setError(`El archivo ${type} debe ser una imagen`);
+        return;
+      }
+
       if (type === "escudo") {
         setEscudoFile(file);
         setEscudoPreview(URL.createObjectURL(file));
@@ -177,6 +271,11 @@ export default function ClubesAdmin() {
   };
 
   const handleSave = async () => {
+    // Validar paso actual antes de guardar
+    if (!validateStep(activeStep)) {
+      return;
+    }
+
     try {
       let clubId = editingId;
 
@@ -235,6 +334,8 @@ export default function ClubesAdmin() {
               onChange={(e) =>
                 setFormData({ ...formData, nombreFantasia: e.target.value })
               }
+              error={!!formErrors.nombreFantasia}
+              helperText={formErrors.nombreFantasia}
             />
             <TextField
               fullWidth
@@ -244,6 +345,8 @@ export default function ClubesAdmin() {
               onChange={(e) =>
                 setFormData({ ...formData, nombreReal: e.target.value })
               }
+              error={!!formErrors.nombreReal}
+              helperText={formErrors.nombreReal}
             />
             <Box sx={{ display: "flex", gap: 2 }}>
               <TextField
@@ -256,14 +359,19 @@ export default function ClubesAdmin() {
                   setFormData({ ...formData, fechaIniciacion: e.target.value })
                 }
                 InputLabelProps={{ shrink: true }}
+                error={!!formErrors.fechaIniciacion}
+                helperText={formErrors.fechaIniciacion}
               />
               <TextField
                 fullWidth
                 label="RUT"
+                placeholder="12.345.678-9"
                 value={formData.rut}
                 onChange={(e) =>
                   setFormData({ ...formData, rut: e.target.value })
                 }
+                error={!!formErrors.rut}
+                helperText={formErrors.rut || "Formato: 12.345.678-9"}
               />
             </Box>
             <TextField
@@ -292,6 +400,9 @@ export default function ClubesAdmin() {
       case 1:
         return (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Todos los campos son opcionales
+            </Typography>
             <Box sx={{ display: "flex", gap: 2 }}>
               <TextField
                 fullWidth
@@ -362,27 +473,36 @@ export default function ClubesAdmin() {
                 fullWidth
                 label="Correo"
                 type="email"
+                placeholder="contacto@club.cl"
                 value={formData.correo}
                 onChange={(e) =>
                   setFormData({ ...formData, correo: e.target.value })
                 }
+                error={!!formErrors.correo}
+                helperText={formErrors.correo}
               />
               <TextField
                 fullWidth
                 label="Teléfono"
+                placeholder="+56 9 1234 5678"
                 value={formData.telefono}
                 onChange={(e) =>
                   setFormData({ ...formData, telefono: e.target.value })
                 }
+                error={!!formErrors.telefono}
+                helperText={formErrors.telefono}
               />
             </Box>
             <TextField
               fullWidth
               label="Sitio Web"
+              placeholder="https://www.club.cl"
               value={formData.sitioWeb}
               onChange={(e) =>
                 setFormData({ ...formData, sitioWeb: e.target.value })
               }
+              error={!!formErrors.sitioWeb}
+              helperText={formErrors.sitioWeb}
             />
             <Typography variant="subtitle1" sx={{ mt: 2 }}>
               Dirección Sede
@@ -518,13 +638,20 @@ export default function ClubesAdmin() {
                   <Typography variant="subtitle2" gutterBottom>
                     Escudo del Club
                   </Typography>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    Máximo 5MB - JPG, PNG, GIF
+                  </Typography>
                   {escudoPreview && (
                     <CardMedia
                       component="img"
                       height="200"
                       image={escudoPreview}
                       alt="Escudo"
-                      sx={{ objectFit: "contain", mb: 2 }}
+                      sx={{ objectFit: "contain", mb: 2, mt: 1 }}
                     />
                   )}
                   <input
@@ -553,13 +680,20 @@ export default function ClubesAdmin() {
                   <Typography variant="subtitle2" gutterBottom>
                     Insignia del Club
                   </Typography>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    Máximo 5MB - JPG, PNG, GIF
+                  </Typography>
                   {insigniaPreview && (
                     <CardMedia
                       component="img"
                       height="200"
                       image={insigniaPreview}
                       alt="Insignia"
-                      sx={{ objectFit: "contain", mb: 2 }}
+                      sx={{ objectFit: "contain", mb: 2, mt: 1 }}
                     />
                   )}
                   <input
@@ -627,7 +761,7 @@ export default function ClubesAdmin() {
       </Box>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
           {error}
         </Alert>
       )}
