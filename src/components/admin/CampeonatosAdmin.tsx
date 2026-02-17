@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -25,7 +25,12 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { getCampeonatos, createCampeonato, updateCampeonato, deleteCampeonato } from "../../services/adminService";
+import {
+  getCampeonatos,
+  createCampeonato,
+  updateCampeonato,
+  deleteCampeonato,
+} from "../../services/adminService";
 
 interface Campeonato {
   id: string;
@@ -121,7 +126,14 @@ export default function CampeonatosAdmin() {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "400px",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -129,7 +141,14 @@ export default function CampeonatosAdmin() {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 3,
+        }}
+      >
         <Typography variant="h5" sx={{ fontWeight: "bold" }}>
           Administración de Campeonatos
         </Typography>
@@ -142,7 +161,11 @@ export default function CampeonatosAdmin() {
         </Button>
       </Box>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       <TableContainer component={Paper}>
         <Table>
@@ -153,7 +176,9 @@ export default function CampeonatosAdmin() {
               <TableCell sx={{ fontWeight: "bold" }}>Fecha Inicio</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Fecha Fin</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Estado</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }} align="center">Acciones</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }} align="center">
+                Acciones
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -203,7 +228,12 @@ export default function CampeonatosAdmin() {
       </TableContainer>
 
       {/* Dialog para crear/editar */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>
           {editingId ? "Editar Campeonato" : "Nuevo Campeonato"}
         </DialogTitle>
@@ -212,7 +242,9 @@ export default function CampeonatosAdmin() {
             fullWidth
             label="Nombre"
             value={formData.nombre}
-            onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, nombre: e.target.value })
+            }
             sx={{ mb: 2 }}
           />
           <TextField
@@ -227,7 +259,9 @@ export default function CampeonatosAdmin() {
             label="Fecha Inicio"
             type="date"
             value={formData.fechaInicio}
-            onChange={(e) => setFormData({ ...formData, fechaInicio: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, fechaInicio: e.target.value })
+            }
             sx={{ mb: 2 }}
             InputLabelProps={{ shrink: true }}
           />
@@ -236,7 +270,9 @@ export default function CampeonatosAdmin() {
             label="Fecha Fin"
             type="date"
             value={formData.fechaFin}
-            onChange={(e) => setFormData({ ...formData, fechaFin: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, fechaFin: e.target.value })
+            }
             sx={{ mb: 2 }}
             InputLabelProps={{ shrink: true }}
           />
@@ -244,7 +280,9 @@ export default function CampeonatosAdmin() {
             <InputLabel>Estado</InputLabel>
             <Select
               value={formData.estado}
-              onChange={(e) => setFormData({ ...formData, estado: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, estado: e.target.value })
+              }
               label="Estado"
             >
               <MenuItem value="Planificación">Planificación</MenuItem>

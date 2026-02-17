@@ -8,7 +8,7 @@ function Registro() {
   const { user: currentUser } = useAuth();
   const [passwordMatchError, setPasswordMatchError] = useState("");
   const [nombre, setNombre] = useState("");
-  const [email, setEmail] = useState("");
+  const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [repetirPassword, setRepetirPassword] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState("");
@@ -17,7 +17,7 @@ function Registro() {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const isAdmin = currentUser?.idRol?.toLowerCase() === "admin";
+  const isAdmin = currentUser?.roles?.includes("admin");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -29,11 +29,11 @@ function Registro() {
     }
     setLoading(true);
     try {
-      const data = { nombre, email, password, fechaNacimiento, idRol: rol };
+      const data = { nombre, correo, password, fechaNacimiento, idRol: rol };
       await registrarUsuario(data);
       setSuccess("¡Registro exitoso! Ahora puedes iniciar sesión.");
       setNombre("");
-      setEmail("");
+      setCorreo("");
       setPassword("");
       setRepetirPassword("");
       setFechaNacimiento("");
@@ -48,7 +48,7 @@ function Registro() {
 
   const isFormValid =
     nombre.trim() !== "" &&
-    email.trim() !== "" &&
+    correo.trim() !== "" &&
     password.trim() !== "" &&
     repetirPassword.trim() !== "" &&
     fechaNacimiento.trim() !== "" &&
@@ -73,15 +73,15 @@ function Registro() {
           disabled={loading}
         />
 
-        <label htmlFor="email">Correo electrónico</label>
+        <label htmlFor="correo">Correo electrónico</label>
         <input
           type="email"
-          id="email"
-          name="email"
+          id="correo"
+          name="correo"
           placeholder="ejemplo@correo.com"
           required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={correo}
+          onChange={(e) => setCorreo(e.target.value)}
           disabled={loading}
         />
 

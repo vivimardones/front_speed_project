@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -21,7 +21,12 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { getDeportistas, createDeportista, updateDeportista, deleteDeportista } from "../../services/adminService";
+import {
+  getDeportistas,
+  createDeportista,
+  updateDeportista,
+  deleteDeportista,
+} from "../../services/adminService";
 
 interface Deportista {
   id: string;
@@ -117,7 +122,14 @@ export default function DeportistasAdmin() {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "400px",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -125,7 +137,14 @@ export default function DeportistasAdmin() {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 3,
+        }}
+      >
         <Typography variant="h5" sx={{ fontWeight: "bold" }}>
           Administración de Deportistas
         </Typography>
@@ -138,7 +157,11 @@ export default function DeportistasAdmin() {
         </Button>
       </Box>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       <TableContainer component={Paper}>
         <Table>
@@ -149,7 +172,9 @@ export default function DeportistasAdmin() {
               <TableCell sx={{ fontWeight: "bold" }}>Club</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Rama</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Categoría</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }} align="center">Acciones</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }} align="center">
+                Acciones
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -185,7 +210,12 @@ export default function DeportistasAdmin() {
       </TableContainer>
 
       {/* Dialog para crear/editar */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>
           {editingId ? "Editar Deportista" : "Nuevo Deportista"}
         </DialogTitle>
@@ -194,7 +224,9 @@ export default function DeportistasAdmin() {
             fullWidth
             label="Nombre"
             value={formData.nombre}
-            onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, nombre: e.target.value })
+            }
             sx={{ mb: 2 }}
           />
           <TextField
@@ -222,7 +254,9 @@ export default function DeportistasAdmin() {
             fullWidth
             label="Categoría"
             value={formData.categoria}
-            onChange={(e) => setFormData({ ...formData, categoria: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, categoria: e.target.value })
+            }
           />
         </DialogContent>
         <DialogActions>

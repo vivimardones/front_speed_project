@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Drawer,
@@ -35,13 +35,43 @@ import SeriesAdmin from "../components/admin/SeriesAdmin";
 const drawerWidth = 280;
 
 const MENU_ITEMS = [
-  { id: "clubes", label: "Clubes", component: ClubesAdmin, icon: SportsSoccerIcon },
+  {
+    id: "clubes",
+    label: "Clubes",
+    component: ClubesAdmin,
+    icon: SportsSoccerIcon,
+  },
   { id: "login", label: "Login", component: LoginAdmin, icon: LoginIcon },
-  { id: "ramas", label: "Ramas Deportivas", component: RamasAdmin, icon: FitnessCenterIcon },
-  { id: "usuarios", label: "Todos los Usuarios", component: UsuariosAdmin, icon: PeopleIcon },
-  { id: "campeonatos", label: "Todos los Campeonatos", component: CampeonatosAdmin, icon: EmojiEventsIcon },
-  { id: "deportistas", label: "Deportistas", component: DeportistasAdmin, icon: PersonIcon },
-  { id: "categorias", label: "Categorías", component: CategoriasAdmin, icon: CategoryIcon },
+  {
+    id: "ramas",
+    label: "Ramas Deportivas",
+    component: RamasAdmin,
+    icon: FitnessCenterIcon,
+  },
+  {
+    id: "usuarios",
+    label: "Todos los Usuarios",
+    component: UsuariosAdmin,
+    icon: PeopleIcon,
+  },
+  {
+    id: "campeonatos",
+    label: "Todos los Campeonatos",
+    component: CampeonatosAdmin,
+    icon: EmojiEventsIcon,
+  },
+  {
+    id: "deportistas",
+    label: "Deportistas",
+    component: DeportistasAdmin,
+    icon: PersonIcon,
+  },
+  {
+    id: "categorias",
+    label: "Categorías",
+    component: CategoriasAdmin,
+    icon: CategoryIcon,
+  },
   { id: "series", label: "Series", component: SeriesAdmin, icon: ViewWeekIcon },
   { id: "salir", label: "Salir", icon: ExitToAppIcon },
 ];

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -38,7 +38,7 @@ export default function UsuariosAdmin() {
     idUsuario: "",
     rut: "",
     nombreCompleto: "",
-    email: "",
+    correo: "",
     contraseña: "",
     rol: "deportista",
     fechaNacimiento: "",
@@ -73,7 +73,7 @@ export default function UsuariosAdmin() {
         idUsuario: "",
         rut: "",
         nombreCompleto: "",
-        email: "",
+        correo: "",
         contraseña: "",
         rol: "deportista",
         fechaNacimiento: "",
@@ -120,7 +120,14 @@ export default function UsuariosAdmin() {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "400px",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -128,13 +135,24 @@ export default function UsuariosAdmin() {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 3,
+        }}
+      >
         <Typography variant="h5" sx={{ fontWeight: "bold" }}>
           Administración de Usuarios
         </Typography>
       </Box>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       <TableContainer component={Paper}>
         <Table>
@@ -144,14 +162,16 @@ export default function UsuariosAdmin() {
               <TableCell sx={{ fontWeight: "bold" }}>Email</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Rol</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>RUT</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }} align="center">Acciones</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }} align="center">
+                Acciones
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {usuarios.map((usuario) => (
               <TableRow key={usuario.idUsuario} hover>
                 <TableCell>{usuario.nombreCompleto}</TableCell>
-                <TableCell>{usuario.email}</TableCell>
+                <TableCell>{usuario.correo}</TableCell>
                 <TableCell>{usuario.rol}</TableCell>
                 <TableCell>{usuario.rut}</TableCell>
                 <TableCell align="center">
@@ -179,24 +199,31 @@ export default function UsuariosAdmin() {
       </TableContainer>
 
       {/* Dialog para editar */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          Editar Usuario
-        </DialogTitle>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Editar Usuario</DialogTitle>
         <DialogContent sx={{ pt: 2 }}>
           <TextField
             fullWidth
             label="Nombre Completo"
             value={formData.nombreCompleto}
-            onChange={(e) => setFormData({ ...formData, nombreCompleto: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, nombreCompleto: e.target.value })
+            }
             sx={{ mb: 2 }}
           />
           <TextField
             fullWidth
             label="Email"
             type="email"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            value={formData.correo}
+            onChange={(e) =>
+              setFormData({ ...formData, correo: e.target.value })
+            }
             sx={{ mb: 2 }}
           />
           <TextField
@@ -210,7 +237,9 @@ export default function UsuariosAdmin() {
             <InputLabel>Rol</InputLabel>
             <Select
               value={formData.rol}
-              onChange={(e) => setFormData({ ...formData, rol: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, rol: e.target.value })
+              }
               label="Rol"
             >
               <MenuItem value="deportista">Deportista</MenuItem>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -121,7 +121,14 @@ export default function LoginAdmin() {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "400px",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -129,7 +136,14 @@ export default function LoginAdmin() {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 3,
+        }}
+      >
         <Typography variant="h5" sx={{ fontWeight: "bold" }}>
           Administración de Usuarios de Login
         </Typography>
@@ -142,7 +156,11 @@ export default function LoginAdmin() {
         </Button>
       </Box>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       <TableContainer component={Paper}>
         <Table>
@@ -153,7 +171,9 @@ export default function LoginAdmin() {
               <TableCell sx={{ fontWeight: "bold" }}>Fecha</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Hora</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Estado</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }} align="center">Acciones</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }} align="center">
+                Acciones
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -167,7 +187,8 @@ export default function LoginAdmin() {
                   <Box
                     sx={{
                       display: "inline-block",
-                      backgroundColor: login.estado === "Exitoso" ? "#4caf50" : "#f44336",
+                      backgroundColor:
+                        login.estado === "Exitoso" ? "#4caf50" : "#f44336",
                       color: "white",
                       px: 2,
                       py: 0.5,
@@ -202,7 +223,12 @@ export default function LoginAdmin() {
       </TableContainer>
 
       {/* Dialog para editar */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>
           {editingId ? "Editar Login" : "Registrar Login"}
         </DialogTitle>
@@ -211,7 +237,9 @@ export default function LoginAdmin() {
             fullWidth
             label="Usuario"
             value={formData.usuario}
-            onChange={(e) => setFormData({ ...formData, usuario: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, usuario: e.target.value })
+            }
             sx={{ mb: 2 }}
           />
           <TextField
@@ -219,7 +247,9 @@ export default function LoginAdmin() {
             label="Email"
             type="email"
             value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
             sx={{ mb: 2 }}
           />
           <TextField
@@ -227,7 +257,9 @@ export default function LoginAdmin() {
             label="Fecha"
             type="date"
             value={formData.fecha}
-            onChange={(e) => setFormData({ ...formData, fecha: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, fecha: e.target.value })
+            }
             sx={{ mb: 2 }}
             InputLabelProps={{ shrink: true }}
           />
@@ -244,7 +276,9 @@ export default function LoginAdmin() {
             <InputLabel>Estado</InputLabel>
             <Select
               value={formData.estado}
-              onChange={(e) => setFormData({ ...formData, estado: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, estado: e.target.value })
+              }
               label="Estado"
             >
               <MenuItem value="Exitoso">Exitoso</MenuItem>

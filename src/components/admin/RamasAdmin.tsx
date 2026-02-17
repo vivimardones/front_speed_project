@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -21,7 +21,12 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { getRamas, createRama, updateRama, deleteRama } from "../../services/adminService";
+import {
+  getRamas,
+  createRama,
+  updateRama,
+  deleteRama,
+} from "../../services/adminService";
 
 interface Rama {
   id: string;
@@ -111,7 +116,14 @@ export default function RamasAdmin() {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "400px",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -119,7 +131,14 @@ export default function RamasAdmin() {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 3,
+        }}
+      >
         <Typography variant="h5" sx={{ fontWeight: "bold" }}>
           Administración de Ramas Deportivas
         </Typography>
@@ -132,7 +151,11 @@ export default function RamasAdmin() {
         </Button>
       </Box>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       <TableContainer component={Paper}>
         <Table>
@@ -141,7 +164,9 @@ export default function RamasAdmin() {
               <TableCell sx={{ fontWeight: "bold" }}>Nombre</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Descripción</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Federación</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }} align="center">Acciones</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }} align="center">
+                Acciones
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -175,7 +200,12 @@ export default function RamasAdmin() {
       </TableContainer>
 
       {/* Dialog para crear/editar */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>
           {editingId ? "Editar Rama Deportiva" : "Nueva Rama Deportiva"}
         </DialogTitle>
@@ -184,7 +214,9 @@ export default function RamasAdmin() {
             fullWidth
             label="Nombre"
             value={formData.nombre}
-            onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, nombre: e.target.value })
+            }
             sx={{ mb: 2 }}
           />
           <TextField
@@ -193,14 +225,18 @@ export default function RamasAdmin() {
             multiline
             rows={3}
             value={formData.descripcion}
-            onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, descripcion: e.target.value })
+            }
             sx={{ mb: 2 }}
           />
           <TextField
             fullWidth
             label="Federación"
             value={formData.federacion}
-            onChange={(e) => setFormData({ ...formData, federacion: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, federacion: e.target.value })
+            }
           />
         </DialogContent>
         <DialogActions>

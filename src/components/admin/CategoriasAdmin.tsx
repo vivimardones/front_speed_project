@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -21,7 +21,12 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { getCategorias, createCategoria, updateCategoria, deleteCategoria } from "../../services/adminService";
+import {
+  getCategorias,
+  createCategoria,
+  updateCategoria,
+  deleteCategoria,
+} from "../../services/adminService";
 
 interface Categoria {
   id: string;
@@ -114,7 +119,14 @@ export default function CategoriasAdmin() {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "400px" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "400px",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -122,7 +134,14 @@ export default function CategoriasAdmin() {
 
   return (
     <Box>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 3,
+        }}
+      >
         <Typography variant="h5" sx={{ fontWeight: "bold" }}>
           Administración de Categorías
         </Typography>
@@ -135,7 +154,11 @@ export default function CategoriasAdmin() {
         </Button>
       </Box>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
 
       <TableContainer component={Paper}>
         <Table>
@@ -145,7 +168,9 @@ export default function CategoriasAdmin() {
               <TableCell sx={{ fontWeight: "bold" }}>Edad Mínima</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Edad Máxima</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Rama</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }} align="center">Acciones</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }} align="center">
+                Acciones
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -180,7 +205,12 @@ export default function CategoriasAdmin() {
       </TableContainer>
 
       {/* Dialog para crear/editar */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>
           {editingId ? "Editar Categoría" : "Nueva Categoría"}
         </DialogTitle>
@@ -189,7 +219,9 @@ export default function CategoriasAdmin() {
             fullWidth
             label="Nombre"
             value={formData.nombre}
-            onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, nombre: e.target.value })
+            }
             sx={{ mb: 2 }}
           />
           <TextField
@@ -197,7 +229,12 @@ export default function CategoriasAdmin() {
             label="Edad Mínima"
             type="number"
             value={formData.edadMinima}
-            onChange={(e) => setFormData({ ...formData, edadMinima: parseInt(e.target.value) || 0 })}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                edadMinima: parseInt(e.target.value) || 0,
+              })
+            }
             sx={{ mb: 2 }}
           />
           <TextField
@@ -205,7 +242,12 @@ export default function CategoriasAdmin() {
             label="Edad Máxima"
             type="number"
             value={formData.edadMaxima}
-            onChange={(e) => setFormData({ ...formData, edadMaxima: parseInt(e.target.value) || 0 })}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                edadMaxima: parseInt(e.target.value) || 0,
+              })
+            }
             sx={{ mb: 2 }}
           />
           <TextField
