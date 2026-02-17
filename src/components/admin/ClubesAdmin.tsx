@@ -148,7 +148,77 @@ export default function ClubesAdmin() {
   // Función para obtener el usuario por ID
   const getUsuarioById = (id?: string) => {
     if (!id) return null;
-    return usuarios.find((u) => u.idUsuario === id);
+    return usuarios.find((u) => u.idUsuario === id || u.id === id);
+  };
+
+  // Función para calcular edad
+  const calcularEdad = (fechaNacimiento: string): number => {
+    const hoy = new Date();
+    const nacimiento = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+    const mes = hoy.getMonth() - nacimiento.getMonth();
+    if (mes < 0 || (mes === 0 && hoy.getDate() < nacimiento.getDate())) {
+      edad--;
+    }
+    return edad;
+  };
+
+  // Función para filtrar usuarios disponibles según cargo
+  const getUsuariosDisponibles = (
+    cargoActual: "presidente" | "secretario" | "tesorero" | "director",
+  ) => {
+    return usuarios.filter((u) => {
+      // Solo mayores de 18 años
+      if (u.fechaNacimiento) {
+        const edad = calcularEdad(u.fechaNacimiento);
+        if (edad < 18) return false;
+      }
+
+      const userId = u.idUsuario || u.id;
+
+      // Excluir usuarios ya seleccionados en otros cargos
+      if (
+        cargoActual === "presidente" &&
+        userId &&
+        (userId === formData.dirigentes?.secretario ||
+          userId === formData.dirigentes?.tesorero ||
+          userId === formData.dirigentes?.director)
+      ) {
+        return false;
+      }
+
+      if (
+        cargoActual === "secretario" &&
+        userId &&
+        (userId === formData.dirigentes?.presidente ||
+          userId === formData.dirigentes?.tesorero ||
+          userId === formData.dirigentes?.director)
+      ) {
+        return false;
+      }
+
+      if (
+        cargoActual === "tesorero" &&
+        userId &&
+        (userId === formData.dirigentes?.presidente ||
+          userId === formData.dirigentes?.secretario ||
+          userId === formData.dirigentes?.director)
+      ) {
+        return false;
+      }
+
+      if (
+        cargoActual === "director" &&
+        userId &&
+        (userId === formData.dirigentes?.presidente ||
+          userId === formData.dirigentes?.secretario ||
+          userId === formData.dirigentes?.tesorero)
+      ) {
+        return false;
+      }
+
+      return true;
+    });
   };
 
   // VALIDACIONES
@@ -424,11 +494,13 @@ export default function ClubesAdmin() {
             />
           </Box>
         );
+
       case 1:
         return (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              Selecciona los usuarios que ocuparán los cargos directivos
+              Selecciona los usuarios que ocuparán los cargos directivos (solo
+              mayores de 18 años)
             </Typography>
 
             {loadingUsuarios ? (
@@ -439,9 +511,9 @@ export default function ClubesAdmin() {
               <>
                 {/* Presidente */}
                 <Autocomplete
-                  options={usuarios}
+                  options={getUsuariosDisponibles("presidente")}
                   getOptionLabel={(option) =>
-                    `${option.nombreCompleto} (${option.correo})`
+                    option.nombreCompleto || "Sin nombre"
                   }
                   value={getUsuarioById(formData.dirigentes?.presidente)}
                   onChange={(_, newValue) => {
@@ -449,7 +521,7 @@ export default function ClubesAdmin() {
                       ...formData,
                       dirigentes: {
                         ...formData.dirigentes,
-                        presidente: newValue?.idUsuario || "",
+                        presidente: newValue?.idUsuario || newValue?.id || "",
                       },
                     });
                   }}
@@ -459,26 +531,26 @@ export default function ClubesAdmin() {
                   renderOption={(props, option) => (
                     <Box component="li" {...props}>
                       <Avatar sx={{ mr: 2, width: 32, height: 32 }}>
-                        {option.nombreCompleto?.charAt(0)}
+                        {option.primerNombre?.charAt(0)}
                       </Avatar>
                       <Box>
                         <Typography variant="body2">
-                          {option.nombreCompleto}
+                          {option.nombreCompleto || "Sin nombre"}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {option.correo} • {option.rol}
+                          {option.roles?.[0] || option.rol || "Sin rol"}
                         </Typography>
                       </Box>
                     </Box>
                   )}
-                  noOptionsText="No hay usuarios disponibles"
+                  noOptionsText="No hay usuarios mayores de 18 años disponibles"
                 />
 
                 {/* Secretario */}
                 <Autocomplete
-                  options={usuarios}
+                  options={getUsuariosDisponibles("secretario")}
                   getOptionLabel={(option) =>
-                    `${option.nombreCompleto} (${option.correo})`
+                    option.nombreCompleto || "Sin nombre"
                   }
                   value={getUsuarioById(formData.dirigentes?.secretario)}
                   onChange={(_, newValue) => {
@@ -486,7 +558,7 @@ export default function ClubesAdmin() {
                       ...formData,
                       dirigentes: {
                         ...formData.dirigentes,
-                        secretario: newValue?.idUsuario || "",
+                        secretario: newValue?.idUsuario || newValue?.id || "",
                       },
                     });
                   }}
@@ -496,26 +568,26 @@ export default function ClubesAdmin() {
                   renderOption={(props, option) => (
                     <Box component="li" {...props}>
                       <Avatar sx={{ mr: 2, width: 32, height: 32 }}>
-                        {option.nombreCompleto?.charAt(0)}
+                        {option.primerNombre?.charAt(0)}
                       </Avatar>
                       <Box>
                         <Typography variant="body2">
-                          {option.nombreCompleto}
+                          {option.nombreCompleto || "Sin nombre"}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {option.correo} • {option.rol}
+                          {option.roles?.[0] || option.rol || "Sin rol"}
                         </Typography>
                       </Box>
                     </Box>
                   )}
-                  noOptionsText="No hay usuarios disponibles"
+                  noOptionsText="No hay usuarios mayores de 18 años disponibles"
                 />
 
                 {/* Tesorero */}
                 <Autocomplete
-                  options={usuarios}
+                  options={getUsuariosDisponibles("tesorero")}
                   getOptionLabel={(option) =>
-                    `${option.nombreCompleto} (${option.correo})`
+                    option.nombreCompleto || "Sin nombre"
                   }
                   value={getUsuarioById(formData.dirigentes?.tesorero)}
                   onChange={(_, newValue) => {
@@ -523,7 +595,7 @@ export default function ClubesAdmin() {
                       ...formData,
                       dirigentes: {
                         ...formData.dirigentes,
-                        tesorero: newValue?.idUsuario || "",
+                        tesorero: newValue?.idUsuario || newValue?.id || "",
                       },
                     });
                   }}
@@ -533,26 +605,26 @@ export default function ClubesAdmin() {
                   renderOption={(props, option) => (
                     <Box component="li" {...props}>
                       <Avatar sx={{ mr: 2, width: 32, height: 32 }}>
-                        {option.nombreCompleto?.charAt(0)}
+                        {option.primerNombre?.charAt(0)}
                       </Avatar>
                       <Box>
                         <Typography variant="body2">
-                          {option.nombreCompleto}
+                          {option.nombreCompleto || "Sin nombre"}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {option.correo} • {option.rol}
+                          {option.roles?.[0] || option.rol || "Sin rol"}
                         </Typography>
                       </Box>
                     </Box>
                   )}
-                  noOptionsText="No hay usuarios disponibles"
+                  noOptionsText="No hay usuarios mayores de 18 años disponibles"
                 />
 
                 {/* Director */}
                 <Autocomplete
-                  options={usuarios}
+                  options={getUsuariosDisponibles("director")}
                   getOptionLabel={(option) =>
-                    `${option.nombreCompleto} (${option.correo})`
+                    option.nombreCompleto || "Sin nombre"
                   }
                   value={getUsuarioById(formData.dirigentes?.director)}
                   onChange={(_, newValue) => {
@@ -560,7 +632,7 @@ export default function ClubesAdmin() {
                       ...formData,
                       dirigentes: {
                         ...formData.dirigentes,
-                        director: newValue?.idUsuario || "",
+                        director: newValue?.idUsuario || newValue?.id || "",
                       },
                     });
                   }}
@@ -570,19 +642,19 @@ export default function ClubesAdmin() {
                   renderOption={(props, option) => (
                     <Box component="li" {...props}>
                       <Avatar sx={{ mr: 2, width: 32, height: 32 }}>
-                        {option.nombreCompleto?.charAt(0)}
+                        {option.primerNombre?.charAt(0)}
                       </Avatar>
                       <Box>
                         <Typography variant="body2">
-                          {option.nombreCompleto}
+                          {option.nombreCompleto || "Sin nombre"}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          {option.correo} • {option.rol}
+                          {option.roles?.[0] || option.rol || "Sin rol"}
                         </Typography>
                       </Box>
                     </Box>
                   )}
-                  noOptionsText="No hay usuarios disponibles"
+                  noOptionsText="No hay usuarios mayores de 18 años disponibles"
                 />
 
                 {/* Vista previa de dirigentes seleccionados */}
@@ -760,6 +832,7 @@ export default function ClubesAdmin() {
             />
           </Box>
         );
+
       case 3:
         return (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -893,6 +966,7 @@ export default function ClubesAdmin() {
             </Box>
           </Box>
         );
+
       default:
         return null;
     }

@@ -30,7 +30,7 @@ import { getLogins } from "../../services/adminService";
 interface LoginRecord {
   id: string;
   usuario: string;
-  email: string;
+  correo: string;
   fecha: string;
   hora: string;
   estado: string;
@@ -45,7 +45,7 @@ export default function LoginAdmin() {
   const [formData, setFormData] = useState<LoginRecord>({
     id: "",
     usuario: "",
-    email: "",
+    correo: "",
     fecha: "",
     hora: "",
     estado: "Exitoso",
@@ -77,7 +77,7 @@ export default function LoginAdmin() {
       setFormData({
         id: Date.now().toString(),
         usuario: "",
-        email: "",
+        correo: "",
         fecha: new Date().toISOString().split("T")[0],
         hora: new Date().toLocaleTimeString(),
         estado: "Exitoso",
@@ -180,7 +180,7 @@ export default function LoginAdmin() {
             {logins.map((login) => (
               <TableRow key={login.id} hover>
                 <TableCell>{login.usuario}</TableCell>
-                <TableCell>{login.email}</TableCell>
+                <TableCell>{login.correo}</TableCell>
                 <TableCell>{login.fecha}</TableCell>
                 <TableCell>{login.hora}</TableCell>
                 <TableCell>
@@ -244,11 +244,11 @@ export default function LoginAdmin() {
           />
           <TextField
             fullWidth
-            label="Email"
+            label="Correo"
             type="email"
-            value={formData.email}
+            value={formData.correo}
             onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
+              setFormData({ ...formData, correo: e.target.value })
             }
             sx={{ mb: 2 }}
           />

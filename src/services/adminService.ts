@@ -16,7 +16,7 @@ interface Club {
   nombre: string;
   ciudad: string;
   telefono: string;
-  email: string;
+  correo: string;
 }
 
 interface Rama {
