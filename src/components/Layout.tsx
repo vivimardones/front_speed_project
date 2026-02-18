@@ -16,10 +16,10 @@ import { useAuth } from "../hooks/useAuth";
 import logoSP from "../images/LogoSP.png";
 
 const adminPages = [
-  { label: "Usuarios", path: "/usuarios" },
-  { label: "Vehículos", path: "/vehiculos" },
-  { label: "Pagos", path: "/pagos" },
-  { label: "Asistencia", path: "/asistencia" },
+  // { label: "Usuarios", path: "/usuarios" },
+  // { label: "Vehículos", path: "/vehiculos" },
+  // { label: "Pagos", path: "/pagos" },
+  // { label: "Asistencia", path: "/asistencia" },
   { label: "Campeonatos", path: "/campeonatos" },
   { label: "Inscribir nuevo usuario", path: "/registro" },
   { label: "Deportistas", path: "/usuarios" },
@@ -31,10 +31,10 @@ const deportistaPages = [
 
 const apoderadoPages = [
   { label: "Mi Perfil", path: "/apoderado/dashboard" },
-  
 ];
 
-const superAdminPages = [{ label: "Panel Admin", path: "/admin/dashboard" }];
+
+const superAdminPages = [{ label: "Administrar", path: "/admin/dashboard" }];
 
 export default function Layout() {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
@@ -61,6 +61,7 @@ export default function Layout() {
     if (userRoles.includes("apoderado")) {
       pages = [...pages, ...apoderadoPages];
     }
+    pages = [...pages, { label: "Mi Perfil", path: "/perfil" }];
 
     return pages;
   }, [user]);

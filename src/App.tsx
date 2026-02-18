@@ -3,7 +3,7 @@ import Layout from "./components/Layout";
 import Contactos from "./pages/Contactos";
 import Registro from "./pages/Registro";
 import Inicio from "./pages/Inicio";
-import UsuariosForm from "./pages/UsuarioForm";
+import Perfil from "./pages/perfil";
 import VehiculosForm from "./pages/VehiculosForm";
 import PagosForm from "./pages/PagosForm";
 import AsistenciaForm from "./pages/AsistenciaForm";
@@ -30,7 +30,7 @@ function App() {
         <Route path="contactos" element={<Contactos />} />
         <Route path="acceso-denegado" element={<AccesoDenegado />} />
 
-        {/* Dashboards por rol */}
+        
         <Route
           path="deportista/dashboard"
           element={
@@ -56,15 +56,16 @@ function App() {
           }
         />
 
-        {/* Rutas administrativas */}
+        {/* Ruta de perfil para cualquier usuario autenticado */}
         <Route
-          path="usuarios"
+          path="perfil"
           element={
-            <ProtectedRoute roles={['administrador']}>
-              <UsuariosForm />
+            <ProtectedRoute>
+              <Perfil />
             </ProtectedRoute>
           }
         />
+        {/* Rutas administrativas */}
         <Route
           path="vehiculos"
           element={
