@@ -95,23 +95,39 @@ const Perfil: React.FC = () => {
     }
   }, [user?.userId]);
 
-  // 1. Pon estos estados arriba de tu componente Perfil
+  // 1. NUEVO: carga los clubes al montar el componente
   const [clubOpen, setClubOpen] = useState(false);
   const [clubes, setClubes] = useState<
-    { id: string; nombreFantasia: string }[]
+    {
+      id: string;
+      nombreFantasia: string;
+      escudo?: string;
+      colores?: string[];
+    }[]
   >([]);
   const [clubSuccess, setClubSuccess] = useState<string>("");
   const [clubError, setClubError] = useState<string>("");
   const [clubData, setClubData] = useState<{ nombreClub: string }>({
     nombreClub: "",
   });
+
   useEffect(() => {
-    if (clubOpen) {
-      getClubes()
-        .then(setClubes)
-        .catch(() => setClubes([]));
-    }
-  }, [clubOpen]);
+    getClubes()
+      .then((clubes) =>
+        setClubes(
+          clubes.map((club) => ({
+            ...club,
+            colores: Array.isArray(club.colores)
+              ? club.colores
+              : club.colores
+                ? Object.values(club.colores)
+                : undefined,
+          })),
+        ),
+      )
+      .catch(() => setClubes([]));
+  }, []);
+  const clubInfo = clubes.find((c) => c.id === editData.clubId);
 
   // Calcular edad para validación
   const edad = editData.fechaNacimiento
@@ -329,33 +345,80 @@ const Perfil: React.FC = () => {
           boxShadow: 8,
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 4, mb: 4 }}>
-          <Avatar
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+            width: "100%",
+          }}
+        >
+          {/* Columna izquierda: info usuario */}
+          <Box
             sx={{
-              width: 100,
-              height: 100,
-              fontSize: 40,
-              bgcolor: "primary.main",
+              width: "50%",
+              minHeight: 160,
+              display: "flex",
+              alignItems: "flex-start",
             }}
           >
-            {user.nombre?.charAt(0) || "U"}
-          </Avatar>
-          <Box>
-            <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-              {user.nombre}
-            </Typography>
-            <Typography color="text.secondary" sx={{ mb: 1, fontSize: 18 }}>
-              {user.correo}
-            </Typography>
-            {edad !== undefined && (
-              <Typography color="text.secondary" sx={{ mb: 1, fontSize: 16 }}>
-                Edad: {edad} años
+            <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+              {/* Avatar */}
+              <Avatar sx={{ width: 80, height: 80, fontSize: 38 }}>
+                {user.nombre?.charAt(0)}
+              </Avatar>
+              {/* Datos principales */}
+              <Box>
+                <Typography variant="h4" sx={{ fontWeight: "bold" }}>
+                  {user.nombre}
+                </Typography>
+                <Typography>{user.correo}</Typography>
+                <Typography>Edad: {edad} años</Typography>
+                <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                  Roles:
+                </Typography>
+                <Typography>{user.roles?.join(", ") || "Sin roles"}</Typography>
+                <Typography>{editData.roles?.join(", ")}</Typography>
+              </Box>
+            </Box>
+          </Box>
+
+          {/* Columna derecha: club */}
+          <Box
+            sx={{
+              width: "50%",
+              minHeight: 160,
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "flex-start",
+            }}
+          >
+            {editData.clubId ? (
+              // Muestra escudo y info del club aquí
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <img
+                  src={clubInfo?.escudo || "/default-escudo.png"}
+                  alt={"Escudo"}
+                  style={{
+                    width: 60,
+                    height: 60,
+                    borderRadius: 8,
+                    border: "1px solid #ccc",
+                    objectFit: "cover",
+                  }}
+                />
+                <Box>
+                  <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                    {clubInfo?.nombreFantasia}
+                  </Typography>
+                </Box>
+              </Box>
+            ) : (
+              <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                Sin club asignado
               </Typography>
             )}
-            <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-              Roles:
-            </Typography>
-            <Typography>{user.roles?.join(", ") || "Sin roles"}</Typography>
           </Box>
         </Box>
         <Box sx={{ display: "flex", gap: 3, justifyContent: "center", mb: 3 }}>
@@ -378,7 +441,6 @@ const Perfil: React.FC = () => {
             </Button>
           )}
 
-          
           {/* SIEMPRE mostrar si es mayor de edad */}
           {esMayorDeEdad && (
             <Button
