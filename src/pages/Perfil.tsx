@@ -59,6 +59,26 @@ function calcularEdad(fechaNacimiento: string) {
   }
   return edad;
 }
+// ==== Utilidades de RUT ====
+function calcularDv(rut: string): string {
+  let suma = 0;
+  let multiplo = 2;
+  for (let i = rut.length - 1; i >= 0; i--) {
+    suma += parseInt(rut.charAt(i), 10) * multiplo;
+    multiplo = multiplo === 7 ? 2 : multiplo + 1;
+  }
+  const resto = suma % 11;
+  if (resto === 0) return "0";
+  if (resto === 1) return "K";
+  return String(11 - resto);
+}
+
+function formatearRut(cuerpo: string): string {
+  // Solo el cuerpo sin puntos ni guion ni dv
+  const dv = calcularDv(cuerpo);
+  const cuerpoFmt = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return `${cuerpoFmt}-${dv}`;
+}
 
 const Perfil: React.FC = () => {
   // Estado de errores para validación
@@ -109,13 +129,25 @@ const Perfil: React.FC = () => {
     try {
       if (user?.userId) {
         const datosCompletos = await getUsuario(user.userId);
+        let numeroIdentificadorFormateado =
+          datosCompletos.numeroIdentificador || "";
+        // Formateo automático de RUT si es tipo RUT/RUT_PROVISORIO
+        if (
+          datosCompletos.tipoIdentificador === "RUT" ||
+          datosCompletos.tipoIdentificador === "RUT_PROVISORIO"
+        ) {
+          // Si la API lo entrega sin DV, lo calculamos/formateamos
+          numeroIdentificadorFormateado = formatearRut(
+            numeroIdentificadorFormateado,
+          );
+        }
         setEditData({
           primerNombre: datosCompletos.primerNombre || "",
           segundoNombre: datosCompletos.segundoNombre || "",
           tercerNombre: datosCompletos.tercerNombre || "",
           apellidoPaterno: datosCompletos.apellidoPaterno || "",
           apellidoMaterno: datosCompletos.apellidoMaterno || "",
-          numeroIdentificador: datosCompletos.numeroIdentificador || "",
+          numeroIdentificador: numeroIdentificadorFormateado,
           correo: datosCompletos.correo || "",
           telefono: datosCompletos.telefono || "",
           telefonoEmergencia: datosCompletos.telefonoEmergencia || "",
@@ -135,21 +167,30 @@ const Perfil: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>,
   ) => {
     const { name, value } = e.target;
-    setEditData({ ...editData, [name as keyof UsuarioDto]: value });
+    // Si es campo de rut, y su tipo es RUT, limpiar y dejar sin formato (backend lo pide sin puntos ni guion ni DV, pero en front se muestra formateado)
+    if (
+      name === "numeroIdentificador" &&
+      (editData.tipoIdentificador === "RUT" ||
+        editData.tipoIdentificador === "RUT_PROVISORIO")
+    ) {
+      const rawRut = String(value).replace(/\D/g, "");
+      setEditData({
+        ...editData,
+        numeroIdentificador: formatearRut(rawRut),
+      });
+    } else {
+      setEditData({ ...editData, [name as keyof UsuarioDto]: value });
+    }
   };
   const handleTipoIdentificadorChange = (e: SelectChangeEvent<string>) => {
     const value = e.target.value as string;
-    // Si es RUT, bloquear y setear número identificador igual a rut
-    if (value === "RUT") {
-      setEditData((prev) => ({
-        ...prev,
-        tipoIdentificador: value,
-        numeroIdentificador: prev.numeroIdentificador || "",
-      }));
-    } else {
-      setEditData((prev) => ({ ...prev, tipoIdentificador: value }));
-    }
+    setEditData((prev) => ({
+      ...prev,
+      tipoIdentificador: value,
+      numeroIdentificador: prev.numeroIdentificador || "",
+    }));
   };
+
   // Validación similar a Registro.tsx
   function validarEdit() {
     const errs: { [k: string]: string } = {};
@@ -195,17 +236,17 @@ const Perfil: React.FC = () => {
     setEditErrors(v);
     if (Object.keys(v).length > 0) return;
     try {
-      // Prepara el payload según el tipo de identificador
       let payload: Partial<UsuarioDto> = { ...editData };
-      if (editData.tipoIdentificador === "RUT") {
+      // Al guardar, si es RUT, enviamos el rut limpio (sin puntos ni guion ni DV) al backend
+      if (
+        editData.tipoIdentificador === "RUT" ||
+        editData.tipoIdentificador === "RUT_PROVISORIO"
+      ) {
+        let rutField = String(editData.numeroIdentificador || "");
+        rutField = rutField.replace(/\D/g, ""); // quita todos los caracteres no numéricos
         payload = {
           ...editData,
-          numeroIdentificador: editData.numeroIdentificador,
-        };
-      } else {
-        payload = {
-          ...editData,
-          numeroIdentificador: undefined,
+          numeroIdentificador: rutField, // backend lo pide sin formato ni dv
         };
       }
       await actualizar(user.userId, payload);
@@ -218,7 +259,7 @@ const Perfil: React.FC = () => {
     }
   };
 
-  // Handlers para crear deportista
+  // Handlers para crear deportista (sin rut)
   const handleCreateOpen = () => {
     setNewDeportista({
       primerNombre: "",
@@ -474,7 +515,8 @@ const Perfil: React.FC = () => {
                 label="Tipo Identificador"
                 onChange={handleTipoIdentificadorChange}
                 disabled={
-                  editData.tipoIdentificador === "RUT" && Boolean(editData.numeroIdentificador)
+                  editData.tipoIdentificador === "RUT" &&
+                  Boolean(editData.numeroIdentificador)
                 }
               >
                 <MenuItem value="RUT">RUT</MenuItem>
@@ -493,23 +535,19 @@ const Perfil: React.FC = () => {
             <TextField
               label="Número Identificador"
               name="numeroIdentificador"
-              value={
-                editData.tipoIdentificador === "RUT"
-                  ? editData.numeroIdentificador || ""
-                  : editData.numeroIdentificador || ""
-              }
+              value={editData.numeroIdentificador || ""}
               onChange={handleEditChange}
               fullWidth
               disabled={
                 editData.tipoIdentificador === "RUT" &&
                 Boolean(
-                  editData.numeroIdentificador && editData.numeroIdentificador === editData.numeroIdentificador,
+                  editData.numeroIdentificador &&
+                  editData.numeroIdentificador === editData.numeroIdentificador,
                 )
               }
               error={!!editErrors.numeroIdentificador}
               helperText={editErrors.numeroIdentificador}
             />
-            {/* Switch de estado ahora está en la 3ra columna, 4ta fila */}
           </Box>
         </DialogContent>
         <DialogActions>
