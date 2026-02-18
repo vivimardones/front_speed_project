@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -84,24 +84,25 @@ const Perfil: React.FC = () => {
   const [editErrors, setEditErrors] = useState<{ [k: string]: string }>({});
   const { user } = useAuth();
   const { crear, actualizar } = useUsuarios();
-  
+
   useEffect(() => {
     if (user?.userId) {
       getUsuario(user.userId).then((datosCompletos) => {
         setEditData(datosCompletos);
+        console.log("Perfil completo:", datosCompletos);
       });
     }
   }, [user?.userId]);
 
   // Calcular edad para validación
-
   const edad = editData.fechaNacimiento
     ? calcularEdad(editData.fechaNacimiento)
     : undefined;
   const esMayorDeEdad = typeof edad === "number" && edad >= 18;
+  // Si algún día la API retorna el campo, funcionará automáticamente (hoy esto dará false porque no existe)
   const tieneDeportistas =
-    Array.isArray(user?.deportistasAsignados) &&
-    user.deportistasAsignados.length > 0;
+    Array.isArray(editData.deportistasAsignados) &&
+    editData.deportistasAsignados.length > 0;
 
   // Estado para editar datos propios
   const [editOpen, setEditOpen] = useState(false);
@@ -343,6 +344,11 @@ const Perfil: React.FC = () => {
             <Typography color="text.secondary" sx={{ mb: 1, fontSize: 18 }}>
               {user.correo}
             </Typography>
+            {edad !== undefined && (
+              <Typography color="text.secondary" sx={{ mb: 1, fontSize: 16 }}>
+                Edad: {edad} años
+              </Typography>
+            )}
             <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
               Roles:
             </Typography>
@@ -358,6 +364,15 @@ const Perfil: React.FC = () => {
           >
             Modificar mis datos
           </Button>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            onClick={handleEditOpen}
+          >
+            Inscribirme a un club
+          </Button>
+          {/* SIEMPRE mostrar si es mayor de edad */}
           {esMayorDeEdad && (
             <Button
               variant="outlined"
@@ -365,9 +380,10 @@ const Perfil: React.FC = () => {
               size="large"
               onClick={handleCreateOpen}
             >
-              Inscribirme como Deportista
+              Inscribir mi deportista
             </Button>
           )}
+          {/* Mostrar solo si el array existe y trae al menos un deportista */}
           {tieneDeportistas && (
             <Button
               variant="outlined"
@@ -423,7 +439,7 @@ const Perfil: React.FC = () => {
             <TextField
               label="Primer Nombre"
               name="primerNombre"
-              value={newDeportista.primerNombre}
+              value={editData.primerNombre || ""}
               onChange={handleCreateChange}
               fullWidth
             />

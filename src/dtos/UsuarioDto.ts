@@ -18,6 +18,7 @@ export interface UsuarioDto {
   estado?: string;
   rol?: string;
   roles?: string[];
+  deportistasAsignados?: string[]; // Replace 'string' with the appropriate type if needed
   createdAt?: unknown;
   updatedAt?: unknown;
 }
