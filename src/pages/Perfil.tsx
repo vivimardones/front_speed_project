@@ -25,9 +25,7 @@ import type { UsuarioDto } from "../dtos/UsuarioDto";
 import { getUsuario } from "../services/usuariosService";
 
 // --- Validaciones reutilizadas de Registro.tsx ---
-function validarEmail(email: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
+
 function validarRut(rut: string) {
   rut = rut.replace(/[^0-9kK]/g, "").toUpperCase();
   if (rut.length < 2) return false;
@@ -99,6 +97,7 @@ const Perfil: React.FC = () => {
   const [newDeportista, setNewDeportista] = useState<UsuarioDto>({
     primerNombre: "",
     apellidoPaterno: "",
+    apellidoMaterno: "",
     correo: "",
     roles: ["deportista"],
   });
@@ -148,7 +147,6 @@ const Perfil: React.FC = () => {
           apellidoPaterno: datosCompletos.apellidoPaterno || "",
           apellidoMaterno: datosCompletos.apellidoMaterno || "",
           numeroIdentificador: numeroIdentificadorFormateado,
-          correo: datosCompletos.correo || "",
           telefono: datosCompletos.telefono || "",
           telefonoEmergencia: datosCompletos.telefonoEmergencia || "",
           fechaNacimiento: datosCompletos.fechaNacimiento || "",
@@ -197,8 +195,6 @@ const Perfil: React.FC = () => {
     if (!editData.primerNombre) errs.primerNombre = "Campo obligatorio";
     if (!editData.apellidoPaterno) errs.apellidoPaterno = "Campo obligatorio";
     if (!editData.apellidoMaterno) errs.apellidoMaterno = "Campo obligatorio";
-    if (!editData.correo) errs.correo = "El correo es obligatorio";
-    else if (!validarEmail(editData.correo)) errs.correo = "Correo inválido";
     if (!editData.fechaNacimiento) errs.fechaNacimiento = "Campo obligatorio";
     else {
       const edad = calcularEdad(editData.fechaNacimiento);
@@ -345,7 +341,7 @@ const Perfil: React.FC = () => {
             size="large"
             onClick={handleCreateOpen}
           >
-            Crear nuevo deportista
+            Inscribirme como Deportista
           </Button>
         </Box>
         {editSuccess && (
@@ -566,7 +562,7 @@ const Perfil: React.FC = () => {
         fullWidth
       >
         <DialogTitle sx={{ fontWeight: "bold" }}>
-          Crear nuevo deportista
+          Convertirme en Deportista
         </DialogTitle>
         <DialogContent sx={{ mt: 1 }}>
           <Box
@@ -579,7 +575,7 @@ const Perfil: React.FC = () => {
             <TextField
               label="Primer Nombre"
               name="primerNombre"
-              value={newDeportista.primerNombre}
+              value={newDeportista.segundoNombre}
               onChange={handleCreateChange}
               fullWidth
             />
