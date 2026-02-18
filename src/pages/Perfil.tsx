@@ -91,10 +91,10 @@ const Perfil: React.FC = () => {
     if (user?.userId) {
       getUsuario(user.userId).then((datosCompletos) => {
         setEditData(datosCompletos);
-        console.log("Perfil completo:", datosCompletos);
       });
     }
   }, [user?.userId]);
+
   // 1. Pon estos estados arriba de tu componente Perfil
   const [clubOpen, setClubOpen] = useState(false);
   const [clubes, setClubes] = useState<
@@ -367,7 +367,7 @@ const Perfil: React.FC = () => {
           >
             Modificar mis datos
           </Button>
-          {esMayorDeEdad && !editData.club && (
+          {esMayorDeEdad && !editData.clubId && (
             <Button
               variant="contained"
               color="primary"
@@ -377,8 +377,10 @@ const Perfil: React.FC = () => {
               Inscribirme a un club
             </Button>
           )}
+
+          
           {/* SIEMPRE mostrar si es mayor de edad */}
-          {esMayorDeEdad && !editData.club && (
+          {esMayorDeEdad && (
             <Button
               variant="contained"
               color="primary"
@@ -390,7 +392,7 @@ const Perfil: React.FC = () => {
                 setClubData({ nombreClub: "" });
               }}
             >
-              Inscribirme a un club
+              Inscribir a mi deportista
             </Button>
           )}
           {/* Mostrar solo si el array existe y trae al menos un deportista */}
@@ -723,6 +725,8 @@ const Perfil: React.FC = () => {
                   return;
                 }
                 await asignarClubUsuario(user.userId, club.id);
+                const datosActualizados = await getUsuario(user.userId);
+                setEditData(datosActualizados);
                 setClubSuccess("¡Inscripción guardada!");
                 setClubOpen(false);
                 // (Opcional) recarga el perfil aquí para ver el club actualizado

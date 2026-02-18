@@ -18,8 +18,8 @@ export interface UsuarioDto {
   estado?: string;
   rol?: string;
   roles?: string[];
-  deportistasAsignados?: string[]; // Replace 'string' with the appropriate type if needed
+  deportistasAsignados?: string[];
   createdAt?: unknown;
   updatedAt?: unknown;
-  club?: string;
+  clubId?: string;
 }
