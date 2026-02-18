@@ -83,7 +83,7 @@ function SuperAdmin() {
   const CurrentComponent = currentSection?.component || ClubesAdmin;
 
   const handleExit = () => {
-    window.close();
+    window.location.href = "/";
   };
 
   return (
