@@ -80,13 +80,31 @@ function formatearRut(cuerpo: string): string {
 
 const Perfil: React.FC = () => {
   // Estado de errores para validación
+  const [editData, setEditData] = useState<Partial<UsuarioDto>>({});
   const [editErrors, setEditErrors] = useState<{ [k: string]: string }>({});
   const { user } = useAuth();
   const { crear, actualizar } = useUsuarios();
+  
+  useEffect(() => {
+    if (user?.userId) {
+      getUsuario(user.userId).then((datosCompletos) => {
+        setEditData(datosCompletos);
+      });
+    }
+  }, [user?.userId]);
+
+  // Calcular edad para validación
+
+  const edad = editData.fechaNacimiento
+    ? calcularEdad(editData.fechaNacimiento)
+    : undefined;
+  const esMayorDeEdad = typeof edad === "number" && edad >= 18;
+  const tieneDeportistas =
+    Array.isArray(user?.deportistasAsignados) &&
+    user.deportistasAsignados.length > 0;
 
   // Estado para editar datos propios
   const [editOpen, setEditOpen] = useState(false);
-  const [editData, setEditData] = useState<Partial<UsuarioDto>>({});
   // Para controlar el switch de estado
   const estadoActivo = (editData.estado ?? "").toLowerCase() === "activo";
   const [editSuccess, setEditSuccess] = useState<string>("");
@@ -255,6 +273,11 @@ const Perfil: React.FC = () => {
     }
   };
 
+  const handleVerDeportistas = () => {
+    // aquí redirige o abre modal según tu diseño
+    alert("Aquí puedes mostrar tus deportistas asignados!");
+  };
+
   // Handlers para crear deportista (sin rut)
   const handleCreateOpen = () => {
     setNewDeportista({
@@ -335,14 +358,26 @@ const Perfil: React.FC = () => {
           >
             Modificar mis datos
           </Button>
-          <Button
-            variant="outlined"
-            color="secondary"
-            size="large"
-            onClick={handleCreateOpen}
-          >
-            Inscribirme como Deportista
-          </Button>
+          {esMayorDeEdad && (
+            <Button
+              variant="outlined"
+              color="secondary"
+              size="large"
+              onClick={handleCreateOpen}
+            >
+              Inscribirme como Deportista
+            </Button>
+          )}
+          {tieneDeportistas && (
+            <Button
+              variant="outlined"
+              color="success"
+              size="large"
+              onClick={handleVerDeportistas}
+            >
+              Ver mis deportistas
+            </Button>
+          )}
         </Box>
         {editSuccess && (
           <Alert severity="success" sx={{ mt: 2 }}>
@@ -388,11 +423,9 @@ const Perfil: React.FC = () => {
             <TextField
               label="Primer Nombre"
               name="primerNombre"
-              value={editData.primerNombre || ""}
-              onChange={handleEditChange}
+              value={newDeportista.primerNombre}
+              onChange={handleCreateChange}
               fullWidth
-              error={!!editErrors.primerNombre}
-              helperText={editErrors.primerNombre}
             />
             <TextField
               label="Segundo Nombre"
@@ -562,7 +595,7 @@ const Perfil: React.FC = () => {
         fullWidth
       >
         <DialogTitle sx={{ fontWeight: "bold" }}>
-          Convertirme en Deportista
+          Inscribirme a un club.
         </DialogTitle>
         <DialogContent sx={{ mt: 1 }}>
           <Box
@@ -575,7 +608,7 @@ const Perfil: React.FC = () => {
             <TextField
               label="Primer Nombre"
               name="primerNombre"
-              value={newDeportista.segundoNombre}
+              value={newDeportista.primerNombre}
               onChange={handleCreateChange}
               fullWidth
             />
