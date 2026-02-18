@@ -23,6 +23,8 @@ import { useAuth } from "../hooks/useAuth";
 import { useUsuarios } from "../hooks/useUsuarios";
 import type { UsuarioDto } from "../dtos/UsuarioDto";
 import { getUsuario } from "../services/usuariosService";
+import { getClubes } from "../services/clubService";
+import { asignarClubUsuario } from "../services/usuariosService";
 
 // --- Validaciones reutilizadas de Registro.tsx ---
 
@@ -93,6 +95,23 @@ const Perfil: React.FC = () => {
       });
     }
   }, [user?.userId]);
+  // 1. Pon estos estados arriba de tu componente Perfil
+  const [clubOpen, setClubOpen] = useState(false);
+  const [clubes, setClubes] = useState<
+    { id: string; nombreFantasia: string }[]
+  >([]);
+  const [clubSuccess, setClubSuccess] = useState<string>("");
+  const [clubError, setClubError] = useState<string>("");
+  const [clubData, setClubData] = useState<{ nombreClub: string }>({
+    nombreClub: "",
+  });
+  useEffect(() => {
+    if (clubOpen) {
+      getClubes()
+        .then(setClubes)
+        .catch(() => setClubes([]));
+    }
+  }, [clubOpen]);
 
   // Calcular edad para validación
   const edad = editData.fechaNacimiento
@@ -207,7 +226,6 @@ const Perfil: React.FC = () => {
       numeroIdentificador: prev.numeroIdentificador || "",
     }));
   };
-
   // Validación similar a Registro.tsx
   function validarEdit() {
     const errs: { [k: string]: string } = {};
@@ -245,7 +263,6 @@ const Perfil: React.FC = () => {
       errs.telefonoEmergencia = "Formato: +569XXXXXXXX";
     return errs;
   }
-
   const handleEditSave = async () => {
     const v = validarEdit();
     setEditErrors(v);
@@ -273,23 +290,9 @@ const Perfil: React.FC = () => {
       setEditError("Error al actualizar datos");
     }
   };
-
   const handleVerDeportistas = () => {
     // aquí redirige o abre modal según tu diseño
     alert("Aquí puedes mostrar tus deportistas asignados!");
-  };
-
-  // Handlers para crear deportista (sin rut)
-  const handleCreateOpen = () => {
-    setNewDeportista({
-      primerNombre: "",
-      apellidoPaterno: "",
-      correo: "",
-      roles: ["deportista"],
-    });
-    setCreateOpen(true);
-    setCreateSuccess("");
-    setCreateError("");
   };
   const handleCreateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewDeportista({ ...newDeportista, [e.target.name]: e.target.value });
@@ -364,23 +367,30 @@ const Perfil: React.FC = () => {
           >
             Modificar mis datos
           </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            onClick={handleEditOpen}
-          >
-            Inscribirme a un club
-          </Button>
-          {/* SIEMPRE mostrar si es mayor de edad */}
-          {esMayorDeEdad && (
+          {esMayorDeEdad && !editData.club && (
             <Button
-              variant="outlined"
-              color="secondary"
+              variant="contained"
+              color="primary"
               size="large"
-              onClick={handleCreateOpen}
+              onClick={() => setClubOpen(true)}
             >
-              Inscribir mi deportista
+              Inscribirme a un club
+            </Button>
+          )}
+          {/* SIEMPRE mostrar si es mayor de edad */}
+          {esMayorDeEdad && !editData.club && (
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={() => {
+                setClubOpen(true);
+                setClubError("");
+                setClubSuccess("");
+                setClubData({ nombreClub: "" });
+              }}
+            >
+              Inscribirme a un club
             </Button>
           )}
           {/* Mostrar solo si el array existe y trae al menos un deportista */}
@@ -648,6 +658,83 @@ const Perfil: React.FC = () => {
           <Button onClick={() => setCreateOpen(false)}>Cancelar</Button>
           <Button onClick={handleCreateSave} variant="contained">
             Crear
+          </Button>
+        </DialogActions>
+      </Dialog>
+      {/* Dialog para inscribirse a club */}
+      <Dialog
+        open={clubOpen}
+        onClose={() => setClubOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle sx={{ fontWeight: "bold" }}>
+          Inscribirme a un club
+        </DialogTitle>
+        <DialogContent sx={{ mt: 1 }}>
+          <Box sx={{ display: "grid", gridTemplateColumns: "1fr", gap: 2 }}>
+            <FormControl fullWidth>
+              <InputLabel id="select-club-label">Elige un club</InputLabel>
+              <Select
+                labelId="select-club-label"
+                value={clubData.nombreClub}
+                label="Elige un club"
+                onChange={(e) =>
+                  setClubData({ ...clubData, nombreClub: e.target.value })
+                }
+              >
+                {clubes.map((club) => (
+                  <MenuItem key={club.id} value={club.nombreFantasia}>
+                    {club.nombreFantasia}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            {clubError && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {clubError}
+              </Alert>
+            )}
+            {clubSuccess && (
+              <Alert severity="success" sx={{ mt: 2 }}>
+                {clubSuccess}
+              </Alert>
+            )}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setClubOpen(false)}>Cancelar</Button>
+          <Button
+            variant="contained"
+            onClick={async () => {
+              setClubError("");
+              setClubSuccess("");
+              if (!clubData.nombreClub) {
+                setClubError("Debes elegir un club.");
+                return;
+              }
+              try {
+                // Busca el objeto club completo para tomar el id
+                const club = clubes.find(
+                  (c) => c.nombreFantasia === clubData.nombreClub,
+                );
+                if (!club) {
+                  setClubError("Club no válido.");
+                  return;
+                }
+                await asignarClubUsuario(user.userId, club.id);
+                setClubSuccess("¡Inscripción guardada!");
+                setClubOpen(false);
+                // (Opcional) recarga el perfil aquí para ver el club actualizado
+              } catch (err) {
+                console.log(err);
+                setClubError(
+                  "No se pudo guardar la inscripción. Intenta nuevamente.",
+                );
+              }
+            }}
+          >
+            Guardar
           </Button>
         </DialogActions>
       </Dialog>

@@ -21,4 +21,5 @@ export interface UsuarioDto {
   deportistasAsignados?: string[]; // Replace 'string' with the appropriate type if needed
   createdAt?: unknown;
   updatedAt?: unknown;
+  club?: string;
 }

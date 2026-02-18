@@ -75,3 +75,17 @@ export const deleteUsuario = async (
   const res = await client.delete<{ mensaje: string }>(`${API_URL}/${id}`);
   return res.data;
 };
+
+export async function asignarClubUsuario(
+  userId: string,
+  clubId: string,
+): Promise<void> {
+  // Ajusta la URL y la lógica a tu backend real
+  return fetch(`${API_URL}/asignar-club/${userId}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ clubId }),
+  }).then((res) => {
+    if (!res.ok) throw new Error("Error en la inscripción al club");
+  });
+}
