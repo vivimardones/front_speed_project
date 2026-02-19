@@ -16,16 +16,16 @@ import {
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
-import LoginIcon from "@mui/icons-material/Login";
-import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+// import LoginIcon from "@mui/icons-material/Login";
+// import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import PeopleIcon from "@mui/icons-material/People";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import PersonIcon from "@mui/icons-material/Person";
 import CategoryIcon from "@mui/icons-material/Category";
 import ViewWeekIcon from "@mui/icons-material/ViewWeek";
 import ClubesAdmin from "../components/admin/ClubesAdmin";
-import LoginAdmin from "../components/admin/LoginAdmin";
-import RamasAdmin from "../components/admin/RamasAdmin";
+// import LoginAdmin from "../components/admin/LoginAdmin";
+// import RamasAdmin from "../components/admin/RamasAdmin";
 import UsuariosAdmin from "../components/admin/UsuariosAdmin";
 import CampeonatosAdmin from "../components/admin/CampeonatosAdmin";
 import DeportistasAdmin from "../components/admin/DeportistasAdmin";
@@ -41,22 +41,16 @@ const MENU_ITEMS = [
     component: ClubesAdmin,
     icon: SportsSoccerIcon,
   },
-  { id: "login", label: "Login", component: LoginAdmin, icon: LoginIcon },
-  {
-    id: "ramas",
-    label: "Ramas Deportivas",
-    component: RamasAdmin,
-    icon: FitnessCenterIcon,
-  },
   {
     id: "usuarios",
-    label: "Todos los Usuarios",
+    label: "Usuarios",
     component: UsuariosAdmin,
     icon: PeopleIcon,
   },
+  // { id: "login", label: "Login", component: LoginAdmin, icon: LoginIcon, disabled: true },
   {
     id: "campeonatos",
-    label: "Todos los Campeonatos",
+    label: "Campeonatos",
     component: CampeonatosAdmin,
     icon: EmojiEventsIcon,
   },
@@ -118,7 +112,7 @@ function SuperAdmin() {
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
-            backgroundColor: "#f5f5f5",
+            backgroundColor: "#b1d3e9",
             paddingTop: "16px",
           },
         }}
@@ -144,18 +138,18 @@ function SuperAdmin() {
                 sx={{
                   borderRadius: "8px",
                   backgroundColor:
-                    selectedSection === item.id ? "#1976d2" : "transparent",
-                  color: selectedSection === item.id ? "#fff" : "#333",
+                    selectedSection === item.id ? "#ffffff" : "transparent",
+                  color: selectedSection === item.id ? "#0b1842" : "#333333",
                   "&:hover": {
                     backgroundColor:
-                      selectedSection === item.id ? "#1565c0" : "#e0e0e0",
+                      selectedSection === item.id ? "#c01515" : "#0c124b",
                   },
                   transition: "all 0.3s ease",
                 }}
               >
                 <ListItemIcon
                   sx={{
-                    color: selectedSection === item.id ? "#fff" : "#333",
+                    color: selectedSection === item.id ? "#1429865b" : "#333",
                     minWidth: 40,
                   }}
                 >

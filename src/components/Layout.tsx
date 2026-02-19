@@ -21,8 +21,8 @@ const adminPages = [
   // { label: "Pagos", path: "/pagos" },
   // { label: "Asistencia", path: "/asistencia" },
   { label: "Campeonatos", path: "/campeonatos" },
-  { label: "Inscribir nuevo usuario", path: "/registro" },
-  { label: "Deportistas", path: "/usuarios" },
+  // { label: "Inscribir nuevo usuario", path: "/registro" },
+  // { label: "Deportistas", path: "/usuarios" },
 ];
 
 const deportistaPages = [
@@ -32,7 +32,6 @@ const deportistaPages = [
 const apoderadoPages = [
   { label: "Mi Perfil", path: "/apoderado/dashboard" },
 ];
-
 
 const superAdminPages = [{ label: "Administrar", path: "/admin/dashboard" }];
 
