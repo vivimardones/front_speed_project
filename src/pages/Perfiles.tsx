@@ -80,7 +80,7 @@ function formatearRut(cuerpo: string): string {
   return `${cuerpoFmt}-${dv}`;
 }
 
-const Perfil: React.FC = () => {
+const Perfiles: React.FC = () => {
   // Estado de errores para validación
   const [editData, setEditData] = useState<Partial<UsuarioDto>>({});
   const [editErrors, setEditErrors] = useState<{ [k: string]: string }>({});
@@ -808,4 +808,4 @@ const Perfil: React.FC = () => {
   );
 };
 
-export default Perfil;
+export default Perfiles;
