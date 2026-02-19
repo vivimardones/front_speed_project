@@ -101,22 +101,17 @@ export default function UsuariosAdmin() {
   };
 
   const handleSave = async () => {
+    const fallbackId = formData.id || formData.idUsuario || "123fake";
     try {
-      if (editingId) {
-        // Usar id si existe, si no idUsuario
-        const userId = formData.id || formData.idUsuario || editingId;
-        setLoading(true);
-        await updateUsuario(userId, formData);
-        await loadUsuarios();
-        setLoading(false);
-        handleCloseDialog();
-      } else {
-        handleCloseDialog();
-      }
+      setLoading(true);
+      await updateUsuario(fallbackId, formData);
+      await loadUsuarios();
+      handleCloseDialog();
     } catch (err) {
-      setLoading(false);
-      setError("Error al guardar el usuario");
+      setError("Error guardando usuario");
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -125,7 +120,7 @@ export default function UsuariosAdmin() {
       try {
         setLoading(true);
         // Buscar el usuario por idUsuario o id
-        const usuario = usuarios.find(u => u.idUsuario === id || u.id === id);
+        const usuario = usuarios.find((u) => u.idUsuario === id || u.id === id);
         const userId = usuario?.id || usuario?.idUsuario || id;
         await deleteUsuario(userId);
         await loadUsuarios();
@@ -252,42 +247,72 @@ export default function UsuariosAdmin() {
               label="Primer Nombre"
               name="primerNombre"
               value={capitalize(formData.primerNombre || "")}
-              onChange={e => setFormData({ ...formData, primerNombre: capitalize(e.target.value) })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  primerNombre: capitalize(e.target.value),
+                })
+              }
               fullWidth
             />
             <TextField
               label="Segundo Nombre"
               name="segundoNombre"
               value={capitalize(formData.segundoNombre || "")}
-              onChange={e => setFormData({ ...formData, segundoNombre: capitalize(e.target.value) })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  segundoNombre: capitalize(e.target.value),
+                })
+              }
               fullWidth
             />
             <TextField
               label="Tercer Nombre"
               name="tercerNombre"
               value={capitalize(formData.tercerNombre || "")}
-              onChange={e => setFormData({ ...formData, tercerNombre: capitalize(e.target.value) })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  tercerNombre: capitalize(e.target.value),
+                })
+              }
               fullWidth
             />
             <TextField
               label="Apellido Paterno"
               name="apellidoPaterno"
               value={capitalize(formData.apellidoPaterno || "")}
-              onChange={e => setFormData({ ...formData, apellidoPaterno: capitalize(e.target.value) })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  apellidoPaterno: capitalize(e.target.value),
+                })
+              }
               fullWidth
             />
             <TextField
               label="Apellido Materno"
               name="apellidoMaterno"
               value={capitalize(formData.apellidoMaterno || "")}
-              onChange={e => setFormData({ ...formData, apellidoMaterno: capitalize(e.target.value) })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  apellidoMaterno: capitalize(e.target.value),
+                })
+              }
               fullWidth
             />
             <TextField
               label="Apellido Materno"
               name="apellidoMaterno"
               value={capitalize(formData.apellidoMaterno || "")}
-              onChange={e => setFormData({ ...formData, apellidoMaterno: capitalize(e.target.value) })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  apellidoMaterno: capitalize(e.target.value),
+                })
+              }
               fullWidth
             />
             <TextField
