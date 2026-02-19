@@ -78,7 +78,7 @@ export const deleteUsuario = async (
   id: string,
 ): Promise<{ mensaje: string }> => {
   const client = getApiClient();
-  const res = await client.delete<{ mensaje: string }>(`${API_URL}/${id}`);
+  const res = await client.delete<{ mensaje: string }>(`${API_URL}/${id}/permanent`);
   return res.data;
 };
 

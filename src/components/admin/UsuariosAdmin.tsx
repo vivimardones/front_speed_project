@@ -226,7 +226,7 @@ export default function UsuariosAdmin() {
                     size="small"
                     color="error"
                     startIcon={<DeleteIcon />}
-                    onClick={() => handleDelete(usuario.idUsuario ?? "")}
+                    onClick={() => handleDelete()}
                   >
                     Eliminar
                   </Button>
