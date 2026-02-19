@@ -38,9 +38,23 @@ export default function UsuariosAdmin() {
   const { user } = useAuth();
   const [usuarios, setUsuarios] = useState<UsuarioDto[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Remueve las propiedades que la API no permite actualizar
+  function limpiarUsuarioUpdate(data: Partial<UsuarioDto>) {
+    // Elimina id, createdAt, updatedAt, nombreCompleto (y puedes agregar más)
+    // Solo envía lo que la API espera
+    const { id, createdAt, updatedAt, nombreCompleto, ...rest } = data;
+    console.log(
+      "Limpiando datos para updateUsuario:",
+      id,
+      createdAt,
+      updatedAt,
+      nombreCompleto,
+    );
+    return rest;
+  }
 
   const [formData, setFormData] = useState<UsuarioDto>({
     idUsuario: "",
@@ -77,7 +91,6 @@ export default function UsuariosAdmin() {
   const handleOpenDialog = (usuario?: UsuarioDto) => {
     if (usuario) {
       setFormData(usuario);
-      setEditingId(usuario.idUsuario ?? null);
     } else {
       setFormData({
         idUsuario: "",
@@ -90,21 +103,22 @@ export default function UsuariosAdmin() {
         primerNombre: "",
         apellidoPaterno: "",
       });
-      setEditingId(null);
     }
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
-    setEditingId(null);
   };
 
   const handleSave = async () => {
+    console.log("Guardando usuario con datos:", formData);
     const fallbackId = formData.id || formData.idUsuario || "123fake";
     try {
       setLoading(true);
-      await updateUsuario(fallbackId, formData);
+      const datosLimpios = limpiarUsuarioUpdate(formData);
+      console.log("Datos limpios para update:", datosLimpios);
+      await updateUsuario(fallbackId, datosLimpios);
       await loadUsuarios();
       handleCloseDialog();
     } catch (err) {
