@@ -129,14 +129,13 @@ export default function UsuariosAdmin() {
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async () => {
+    const id = formData.idUsuario || formData.id || "123fake";
     if (confirm("¿Estás seguro de que deseas eliminar este usuario?")) {
       try {
         setLoading(true);
-        // Buscar el usuario por idUsuario o id
-        const usuario = usuarios.find((u) => u.idUsuario === id || u.id === id);
-        const userId = usuario?.id || usuario?.idUsuario || id;
-        await deleteUsuario(userId);
+        console.log("Eliminando usuario con ID:", id);
+        await deleteUsuario(id);
         await loadUsuarios();
         setLoading(false);
       } catch (err) {
