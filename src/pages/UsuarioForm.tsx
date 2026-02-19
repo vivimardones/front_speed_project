@@ -15,14 +15,14 @@ import type { SelectChangeEvent } from "@mui/material";
 export default function UsuariosForm() {
   const [usuario, setUsuario] = useState<UsuarioDto>({
     idUsuario: "",
-    rut: "",
+    numeroIdentificador: "",
     nombreCompleto: "",
     correo: "",
-    contraseña: "",
     rol: "deportista",
     fechaNacimiento: "",
     sexo: "Femenino",
-    fechaRegistro: new Date().toISOString(),
+    primerNombre: "",
+    apellidoPaterno: "",
   });
 
   // Para TextField
@@ -49,7 +49,7 @@ export default function UsuariosForm() {
       onSubmit={handleSubmit}
       sx={{ display: "flex", flexDirection: "column", gap: 2, maxWidth: 400 }}
     >
-      <TextField label="RUT" name="rut" onChange={handleInputChange} required />
+      <TextField label="Número Identificador" name="numeroIdentificador" onChange={handleInputChange} required />
       <TextField
         label="Nombre completo"
         name="nombreCompleto"

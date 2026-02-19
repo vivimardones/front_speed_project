@@ -3,7 +3,7 @@ import Layout from "./components/Layout";
 import Contactos from "./pages/Contactos";
 import Registro from "./pages/Registro";
 import Inicio from "./pages/Inicio";
-import Perfil from "./pages/perfil";
+import Perfil from "./pages/Perfil";
 import VehiculosForm from "./pages/VehiculosForm";
 import PagosForm from "./pages/PagosForm";
 import AsistenciaForm from "./pages/AsistenciaForm";

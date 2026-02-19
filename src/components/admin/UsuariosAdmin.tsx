@@ -36,14 +36,14 @@ export default function UsuariosAdmin() {
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<UsuarioDto>({
     idUsuario: "",
-    rut: "",
+    numeroIdentificador: "",
     nombreCompleto: "",
     correo: "",
-    contraseña: "",
     rol: "deportista",
     fechaNacimiento: "",
     sexo: "Femenino",
-    fechaRegistro: new Date().toISOString(),
+    primerNombre: "",
+    apellidoPaterno: "",
   });
 
   useEffect(() => {
@@ -67,18 +67,18 @@ export default function UsuariosAdmin() {
   const handleOpenDialog = (usuario?: UsuarioDto) => {
     if (usuario) {
       setFormData(usuario);
-      setEditingId(usuario.idUsuario);
+      setEditingId(usuario.idUsuario ?? null);
     } else {
       setFormData({
         idUsuario: "",
-        rut: "",
+        numeroIdentificador: "",
         nombreCompleto: "",
         correo: "",
-        contraseña: "",
         rol: "deportista",
         fechaNacimiento: "",
         sexo: "Femenino",
-        fechaRegistro: new Date().toISOString().split("T")[0],
+        primerNombre: "",
+        apellidoPaterno: "",
       });
       setEditingId(null);
     }
@@ -173,7 +173,7 @@ export default function UsuariosAdmin() {
                 <TableCell>{usuario.nombreCompleto}</TableCell>
                 <TableCell>{usuario.correo}</TableCell>
                 <TableCell>{usuario.rol}</TableCell>
-                <TableCell>{usuario.rut}</TableCell>
+                <TableCell>{usuario.numeroIdentificador}</TableCell>
                 <TableCell align="center">
                   <Button
                     size="small"
@@ -187,7 +187,7 @@ export default function UsuariosAdmin() {
                     size="small"
                     color="error"
                     startIcon={<DeleteIcon />}
-                    onClick={() => handleDelete(usuario.idUsuario)}
+                    onClick={() => handleDelete(usuario.idUsuario ?? "")}
                   >
                     Eliminar
                   </Button>
@@ -228,9 +228,9 @@ export default function UsuariosAdmin() {
           />
           <TextField
             fullWidth
-            label="RUT"
-            value={formData.rut}
-            onChange={(e) => setFormData({ ...formData, rut: e.target.value })}
+            label="Número Identificador"
+            value={formData.numeroIdentificador}
+            onChange={(e) => setFormData({ ...formData, numeroIdentificador: e.target.value })}
             sx={{ mb: 2 }}
           />
           <FormControl fullWidth sx={{ mb: 2 }}>
