@@ -20,10 +20,16 @@ const construirNombreCompleto = (usuario: UsuarioDto): string => {
     .join(" ");
 };
 
-// Obtener todos los usuarios
-export const getUsuarios = async (): Promise<UsuarioDto[]> => {
+// Obtener todos los usuarios, permitiendo filtrar por correo y rol
+export const getUsuarios = async (correo?: string, rol?: string): Promise<UsuarioDto[]> => {
   const client = getApiClient();
-  const res = await client.get<UsuarioDto[]>(API_URL);
+  let url = API_URL;
+  const params: Record<string, string> = {};
+  if (correo) params.correo = correo;
+  if (rol) params.rol = rol;
+  const query = new URLSearchParams(params).toString();
+  if (query) url += `?${query}`;
+  const res = await client.get<UsuarioDto[]>(url);
 
   // Mapear y agregar nombreCompleto
   const usuarios = res.data.map((usuario: UsuarioDto) => ({

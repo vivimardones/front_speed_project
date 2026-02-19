@@ -21,19 +21,27 @@ import {
   InputLabel,
   CircularProgress,
   Alert,
+  Switch,
+  FormControlLabel,
+  capitalize,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { getUsuarios } from "../../services/usuariosService";
 import { updateUsuario, deleteUsuario } from "../../services/usuariosService";
 import type { UsuarioDto } from "../../dtos/UsuarioDto";
+import { formatRut } from "../../utils/formatRut";
+import { formatFecha } from "../../utils/formatFecha";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function UsuariosAdmin() {
+  const { user } = useAuth();
   const [usuarios, setUsuarios] = useState<UsuarioDto[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const [formData, setFormData] = useState<UsuarioDto>({
     idUsuario: "",
     numeroIdentificador: "",
@@ -47,9 +55,11 @@ export default function UsuariosAdmin() {
   });
 
   useEffect(() => {
-    loadUsuarios();
-  }, []);
-
+    if (user) {
+      loadUsuarios();
+    }
+  }, [user]);
+  const estadoActivo = (formData.estado ?? "").toLowerCase() === "activo";
   const loadUsuarios = async () => {
     try {
       setLoading(true);
@@ -93,14 +103,18 @@ export default function UsuariosAdmin() {
   const handleSave = async () => {
     try {
       if (editingId) {
-        await updateUsuario(editingId, formData);
+        // Usar id si existe, si no idUsuario
+        const userId = formData.id || formData.idUsuario || editingId;
+        setLoading(true);
+        await updateUsuario(userId, formData);
+        await loadUsuarios();
+        setLoading(false);
+        handleCloseDialog();
       } else {
-        // Para nuevo usuario, usar el servicio de creación
-        alert("Para crear nuevos usuarios, use el formulario de registro");
+        handleCloseDialog();
       }
-      handleCloseDialog();
-      await loadUsuarios();
     } catch (err) {
+      setLoading(false);
       setError("Error al guardar el usuario");
       console.error(err);
     }
@@ -109,9 +123,15 @@ export default function UsuariosAdmin() {
   const handleDelete = async (id: string) => {
     if (confirm("¿Estás seguro de que deseas eliminar este usuario?")) {
       try {
-        await deleteUsuario(id);
+        setLoading(true);
+        // Buscar el usuario por idUsuario o id
+        const usuario = usuarios.find(u => u.idUsuario === id || u.id === id);
+        const userId = usuario?.id || usuario?.idUsuario || id;
+        await deleteUsuario(userId);
         await loadUsuarios();
+        setLoading(false);
       } catch (err) {
+        setLoading(false);
         setError("Error al eliminar el usuario");
         console.error(err);
       }
@@ -159,9 +179,11 @@ export default function UsuariosAdmin() {
           <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
             <TableRow>
               <TableCell sx={{ fontWeight: "bold" }}>Nombre Completo</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Email</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>Rol</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>RUT</TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>
+                Fecha Nacimiento
+              </TableCell>
+              <TableCell sx={{ fontWeight: "bold" }}>Sexo</TableCell>
               <TableCell sx={{ fontWeight: "bold" }} align="center">
                 Acciones
               </TableCell>
@@ -171,9 +193,18 @@ export default function UsuariosAdmin() {
             {usuarios.map((usuario) => (
               <TableRow key={usuario.idUsuario} hover>
                 <TableCell>{usuario.nombreCompleto}</TableCell>
-                <TableCell>{usuario.correo}</TableCell>
-                <TableCell>{usuario.rol}</TableCell>
-                <TableCell>{usuario.numeroIdentificador}</TableCell>
+                <TableCell>
+                  {usuario.numeroIdentificador
+                    ? formatRut(usuario.numeroIdentificador)
+                    : ""}
+                </TableCell>
+                <TableCell>{formatFecha(usuario.fechaNacimiento)}</TableCell>
+                <TableCell>
+                  {usuario.sexo
+                    ? usuario.sexo.charAt(0).toUpperCase() +
+                      usuario.sexo.slice(1).toLowerCase()
+                    : ""}
+                </TableCell>
                 <TableCell align="center">
                   <Button
                     size="small"
@@ -198,56 +229,174 @@ export default function UsuariosAdmin() {
         </Table>
       </TableContainer>
 
-      {/* Dialog para editar */}
+      {/* Dialog avanzado para editar usuario */}
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
-        maxWidth="sm"
+        maxWidth="lg"
         fullWidth
       >
-        <DialogTitle>Editar Usuario</DialogTitle>
-        <DialogContent sx={{ pt: 2 }}>
-          <TextField
-            fullWidth
-            label="Nombre Completo"
-            value={formData.nombreCompleto}
-            onChange={(e) =>
-              setFormData({ ...formData, nombreCompleto: e.target.value })
-            }
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            fullWidth
-            label="Email"
-            type="email"
-            value={formData.correo}
-            onChange={(e) =>
-              setFormData({ ...formData, correo: e.target.value })
-            }
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            fullWidth
-            label="Número Identificador"
-            value={formData.numeroIdentificador}
-            onChange={(e) => setFormData({ ...formData, numeroIdentificador: e.target.value })}
-            sx={{ mb: 2 }}
-          />
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>Rol</InputLabel>
-            <Select
-              value={formData.rol}
+        <DialogTitle sx={{ fontWeight: "bold" }}>
+          Editar Usuario - {formData.nombreCompleto}
+        </DialogTitle>
+        <DialogContent sx={{ mt: 1 }}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr 1fr" },
+              gap: 2,
+              alignItems: "center",
+            }}
+          >
+            <TextField
+              label="Primer Nombre"
+              name="primerNombre"
+              value={capitalize(formData.primerNombre || "")}
+              onChange={e => setFormData({ ...formData, primerNombre: capitalize(e.target.value) })}
+              fullWidth
+            />
+            <TextField
+              label="Segundo Nombre"
+              name="segundoNombre"
+              value={capitalize(formData.segundoNombre || "")}
+              onChange={e => setFormData({ ...formData, segundoNombre: capitalize(e.target.value) })}
+              fullWidth
+            />
+            <TextField
+              label="Tercer Nombre"
+              name="tercerNombre"
+              value={capitalize(formData.tercerNombre || "")}
+              onChange={e => setFormData({ ...formData, tercerNombre: capitalize(e.target.value) })}
+              fullWidth
+            />
+            <TextField
+              label="Apellido Paterno"
+              name="apellidoPaterno"
+              value={capitalize(formData.apellidoPaterno || "")}
+              onChange={e => setFormData({ ...formData, apellidoPaterno: capitalize(e.target.value) })}
+              fullWidth
+            />
+            <TextField
+              label="Apellido Materno"
+              name="apellidoMaterno"
+              value={capitalize(formData.apellidoMaterno || "")}
+              onChange={e => setFormData({ ...formData, apellidoMaterno: capitalize(e.target.value) })}
+              fullWidth
+            />
+            <TextField
+              label="Apellido Materno"
+              name="apellidoMaterno"
+              value={capitalize(formData.apellidoMaterno || "")}
+              onChange={e => setFormData({ ...formData, apellidoMaterno: capitalize(e.target.value) })}
+              fullWidth
+            />
+            <TextField
+              label="Teléfono"
+              name="telefono"
+              value={formData.telefono || ""}
               onChange={(e) =>
-                setFormData({ ...formData, rol: e.target.value })
+                setFormData({ ...formData, telefono: e.target.value })
               }
-              label="Rol"
-            >
-              <MenuItem value="deportista">Deportista</MenuItem>
-              <MenuItem value="apoderado">Apoderado</MenuItem>
-              <MenuItem value="admin">Administrador</MenuItem>
-              <MenuItem value="superadmin">SuperAdmin</MenuItem>
-            </Select>
-          </FormControl>
+              fullWidth
+            />
+            <TextField
+              label="Teléfono Emergencia"
+              name="telefonoEmergencia"
+              value={formData.telefonoEmergencia || ""}
+              onChange={(e) =>
+                setFormData({ ...formData, telefonoEmergencia: e.target.value })
+              }
+              fullWidth
+            />
+            <TextField
+              label="Fecha de nacimiento"
+              name="fechaNacimiento"
+              value={formData.fechaNacimiento || ""}
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              onChange={(e) =>
+                setFormData({ ...formData, fechaNacimiento: e.target.value })
+              }
+              fullWidth
+            />
+            <FormControl fullWidth>
+              <InputLabel id="sexo-label">Sexo</InputLabel>
+              <Select
+                labelId="sexo-label"
+                name="sexo"
+                value={formData.sexo || ""}
+                label="Sexo"
+                onChange={(e) =>
+                  setFormData({ ...formData, sexo: e.target.value })
+                }
+              >
+                <MenuItem value="femenino">Femenino</MenuItem>
+                <MenuItem value="masculino">Masculino</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel id="tipo-identificador-label">
+                Tipo Identificador
+              </InputLabel>
+              <Select
+                labelId="tipo-identificador-label"
+                name="tipoIdentificador"
+                value={formData.tipoIdentificador || ""}
+                label="Tipo Identificador"
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    tipoIdentificador: e.target.value,
+                  })
+                }
+              >
+                <MenuItem value="RUT">RUT</MenuItem>
+                <MenuItem value="RUT_PROVISORIO">RUT Provisorio</MenuItem>
+                <MenuItem value="PASAPORTE">Pasaporte</MenuItem>
+                <MenuItem value="IDENTIFICADOR_EXTRANJERO">
+                  Otro Identificador
+                </MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              label={
+                ["RUT", "RUT_PROVISORIO"].includes(
+                  formData.tipoIdentificador || "",
+                ) && formData.numeroIdentificador
+                  ? `Número Identificador`
+                  : "Número Identificador"
+              }
+              name="numeroIdentificador"
+              value={
+                (formData.numeroIdentificador || "") +
+                " - " +
+                (formatRut(formData.numeroIdentificador || "").split("-")[1] ||
+                  "")
+              }
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  numeroIdentificador: e.target.value,
+                })
+              }
+              fullWidth
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={estadoActivo}
+                  onChange={(_, checked) =>
+                    setFormData({
+                      ...formData,
+                      estado: checked ? "activo" : "inactivo",
+                    })
+                  }
+                />
+              }
+              label={estadoActivo ? "Activo" : "Inactivo"}
+              sx={{ gridColumn: "3", gridRow: "4", justifySelf: "end" }}
+            />
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancelar</Button>
